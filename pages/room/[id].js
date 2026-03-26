@@ -345,7 +345,6 @@ export default function RoomPage() {
                 interactive={isMyTurn}
                 label={`Enemy: ${opponent.nickname}`}
                 lastAttack={lastAttack}
-                sunkCells={sunkCellSet}
               />
               <Board
                 board={me.board}
