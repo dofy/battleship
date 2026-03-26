@@ -38,6 +38,7 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
   const [direction, setDirection]   = useState('H')
   const [secondsLeft, setSeconds]   = useState(90)
   const [ready, setReady]           = useState(false)
+  const [hoverCell, setHoverCell]   = useState(null)
 
   const shipIdx = isRandom ? SHIPS.length : placements.length
 
@@ -52,6 +53,18 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
     return () => clearInterval(id)
   }, [placingDeadline])
 
+  // Toggle direction with Space key
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.code === 'Space' && !ready && shipIdx < SHIPS.length) {
+        e.preventDefault()
+        setDirection(d => d === 'H' ? 'V' : 'H')
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [ready, shipIdx])
+
   const canPlace = useCallback((b, row, col, size, dir) => {
     for (let i = 0; i < size; i++) {
       const r = dir === 'H' ? row : row + i
@@ -64,6 +77,22 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
     }
     return true
   }, [])
+
+  function getPreview() {
+    if (ready || shipIdx >= SHIPS.length || !hoverCell) return null
+    const { size } = SHIPS[shipIdx]
+    const cells = []
+    let outOfBounds = false
+    for (let i = 0; i < size; i++) {
+      const r = direction === 'H' ? hoverCell.row : hoverCell.row + i
+      const c = direction === 'H' ? hoverCell.col + i : hoverCell.col
+      if (r < 0 || r >= 10 || c < 0 || c >= 10) { outOfBounds = true; continue }
+      cells.push({ r, c, isBow: i === 0, isStern: i === size - 1, shipDir: direction })
+    }
+    if (outOfBounds) return { cells, valid: false }
+    const valid = canPlace(board, hoverCell.row, hoverCell.col, size, direction)
+    return { cells, valid }
+  }
 
   function handleCellClick(row, col) {
     if (ready || shipIdx >= SHIPS.length) return
@@ -103,6 +132,7 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
   const pct = placingDeadline ? Math.max(0, (secondsLeft / 90) * 100) : 100
   const allPlaced = shipIdx >= SHIPS.length
   const currentShip = !allPlaced ? SHIPS[shipIdx] : null
+  const preview = getPreview()
 
   return (
     <div className="space-y-4">
@@ -119,13 +149,26 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
         </span>
       </div>
 
-      <div className="flex gap-6 items-start">
-        <Board
-          board={board}
-          onCellClick={handleCellClick}
-          interactive={!ready && !allPlaced}
-          label="Click grid to place ships"
-        />
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+        <div>
+          <Board
+            board={board}
+            onCellClick={handleCellClick}
+            onCellHover={(r, c) => !ready && !allPlaced && setHoverCell({ row: r, col: c })}
+            onBoardLeave={() => setHoverCell(null)}
+            preview={(!ready && !allPlaced) ? preview : null}
+            interactive={!ready && !allPlaced}
+            label="Click grid to place ships"
+          />
+          {/* Invalid placement notice — reserved height to prevent layout shift */}
+          <div className="h-5 mt-1">
+            {hoverCell && preview && !preview.valid && !ready && !allPlaced && (
+              <p className="text-red-400 text-xs tracking-wide text-center">
+                ⚠ Cannot place here
+              </p>
+            )}
+          </div>
+        </div>
 
         <div className="space-y-3 w-44">
           {/* Current ship */}
@@ -133,19 +176,28 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
             <div className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
               {currentShip ? (
                 <>
-                  <div className="text-sm text-sky-400 font-bold uppercase mb-1 tracking-widest">Placing</div>
+                  <div className="text-xs text-sky-400 font-bold uppercase mb-1 tracking-widest">Placing</div>
                   <div className="text-zinc-100 font-medium text-sm mb-2">{currentShip.name}</div>
-                  <div className="flex gap-0.5 mb-2">
+                  <div className="flex gap-0.5 mb-3">
                     {Array.from({ length: currentShip.size }, (_, k) => (
-                      <div key={k} className="w-4 h-4 bg-teal-600 rounded-sm" />
+                      <div key={k} className={`h-4 bg-teal-600 ${
+                        k === 0                          ? 'w-4 rounded-l-full rounded-r-none'
+                        : k === currentShip.size - 1    ? 'w-4 rounded-r rounded-l-none'
+                        : 'w-4 rounded-none'
+                      }`} />
                     ))}
                   </div>
+                  {/* Direction toggle */}
                   <button
                     onClick={() => setDirection(d => d === 'H' ? 'V' : 'H')}
-                    className="w-full py-1 text-sm text-zinc-300 bg-zinc-700 hover:bg-zinc-600 rounded transition-colors"
+                    className="w-full py-1.5 text-xs text-zinc-300 bg-zinc-700 hover:bg-zinc-600 rounded transition-colors flex items-center justify-center gap-2"
                   >
-                    Dir: {direction === 'H' ? '➡ Horiz' : '⬇ Vert'}
+                    <span className={`text-base leading-none transition-transform duration-200 ${direction === 'V' ? 'rotate-90' : ''}`}>
+                      ➔
+                    </span>
+                    <span className="tracking-widest">{direction === 'H' ? 'HORIZONTAL' : 'VERTICAL'}</span>
                   </button>
+                  <p className="text-zinc-600 text-xs text-center mt-1">Space to rotate</p>
                 </>
               ) : (
                 <p className="text-emerald-400 text-sm font-medium">✓ Fleet ready</p>
@@ -157,8 +209,8 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
           <div className="space-y-1">
             {SHIPS.map((s, i) => (
               <div key={i} className={`flex items-center gap-2 text-sm px-2 py-1.5 rounded-md ${
-                i === shipIdx    ? 'bg-sky-950 border border-sky-700 text-zinc-100' :
-                i < shipIdx      ? 'text-zinc-600 line-through' :
+                i === shipIdx ? 'bg-sky-950 border border-sky-700 text-zinc-100' :
+                i < shipIdx   ? 'text-zinc-600 line-through' :
                 'text-zinc-500'
               }`}>
                 <div className="flex gap-0.5">

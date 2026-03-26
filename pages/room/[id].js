@@ -26,6 +26,7 @@ export default function RoomPage() {
   const [lastAttack, setLastAttack]         = useState(null)
   const [lastDefense, setLastDefense]       = useState(null)
   const [turnCountdown, setTurnCountdown]   = useState(null)
+  const [sunkCellSet, setSunkCellSet]       = useState(new Set())
   const socketRef         = useRef(null)
   const myIdRef           = useRef(null)
   const roomStateRef      = useRef(null)
@@ -83,16 +84,26 @@ export default function RoomPage() {
 
     const onPlaceTimeout = () => setMessage('⏰ Placement timeout — fleet deployed randomly')
 
-    const onGameResult = ({ winner, hit, sunk, shipName }) => {
-      const myNickname = localStorage.getItem('battleship_nickname') || ''
-      const isHit  = !!(winner || hit || sunk)
-      const coord  = pendingAttackRef.current ? coordLabel(pendingAttackRef.current.row, pendingAttackRef.current.col) : ''
+    const onGameResult = ({ winner, hit, sunk, shipName, sunkCells }) => {
+      const myNickname   = localStorage.getItem('battleship_nickname') || ''
+      const wasAttacker  = pendingAttackRef.current !== null
+      const isHit        = !!(winner || hit || sunk)
+      const coord        = pendingAttackRef.current ? coordLabel(pendingAttackRef.current.row, pendingAttackRef.current.col) : ''
       pendingAttackRef.current = null
 
       setLastAttack(prev => (prev && prev.result === null)
         ? { ...prev, result: isHit ? 'hit' : 'miss', ts: Date.now() }
         : prev
       )
+
+      // Track sunk ship cells on opponent board (only for the attacker)
+      if (sunk && sunkCells && wasAttacker) {
+        setSunkCellSet(prev => {
+          const next = new Set(prev)
+          sunkCells.forEach(({ row, col }) => next.add(`${row},${col}`))
+          return next
+        })
+      }
 
       if (winner) {
         const isWinner = winner === myNickname
@@ -203,6 +214,7 @@ export default function RoomPage() {
 
   function handleRematch() {
     setSunkShipNames([])
+    setSunkCellSet(new Set())
     setRematchVotes({ votes: 0, total: 2 })
     setMessage('')
     setGameResult(null)
@@ -323,19 +335,23 @@ export default function RoomPage() {
 
         {/* Battle phase */}
         {(status === 'playing' || status === 'finished') && me && opponent && (
-          <div className="flex gap-8 items-start">
-            <Board
-              board={opponent.board}
-              onCellClick={status === 'playing' ? handleAttack : undefined}
-              interactive={isMyTurn}
-              label={`Enemy: ${opponent.nickname}`}
-              lastAttack={lastAttack}
-            />
-            <Board
-              board={me.board}
-              label={`Fleet: ${me.nickname}`}
-              lastAttack={lastDefense}
-            />
+          <div className="space-y-4">
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-start">
+              <Board
+                board={opponent.board}
+                onCellClick={status === 'playing' ? handleAttack : undefined}
+                interactive={isMyTurn}
+                label={`Enemy: ${opponent.nickname}`}
+                lastAttack={lastAttack}
+                sunkCells={sunkCellSet}
+              />
+              <Board
+                board={me.board}
+                label={`Fleet: ${me.nickname}`}
+                lastAttack={lastDefense}
+                shake={lastDefense?.result === 'hit' ? lastDefense.ts : null}
+              />
+            </div>
             <GameStats roomState={roomState} myId={myId} sunkShipNames={sunkShipNames} />
           </div>
         )}
