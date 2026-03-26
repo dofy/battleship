@@ -16,7 +16,7 @@ function Confetti() {
     resize()
     window.addEventListener('resize', resize)
 
-    const COLORS = ['#FFD700','#FF6B6B','#4ECDC4','#45B7D1','#C0BDFF','#FF9F9F','#98D8C8','#FFEAA7']
+    const COLORS = ['#FFD700','#FFA500','#E0E0E0','#A8C8E8','#B8D4B8','#FFD080','#C0C8D0','#F0E0A0']
     const particles = Array.from({ length: 130 }, () => ({
       x:   Math.random() * window.innerWidth,
       y:   Math.random() * window.innerHeight - window.innerHeight,
@@ -71,7 +71,7 @@ function Bubbles() {
       {items.map((b, i) => (
         <span
           key={i}
-          className="bubble absolute bottom-0 rounded-full border border-blue-700/40 bg-blue-900/20"
+          className="bubble absolute bottom-0 rounded-full border border-zinc-600/40 bg-zinc-700/20"
           style={{
             left: b.left,
             width:  b.size,
@@ -106,7 +106,7 @@ export default function GameOverOverlay({ result, onDismiss }) {
         }
         @keyframes goldGlow {
           0%,100% { text-shadow: 0 0 16px #FFD700, 0 0 32px #FFB300 }
-          50%     { text-shadow: 0 0 32px #FFD700, 0 0 64px #FF8C00, 0 0 80px #FF6B00 }
+          50%     { text-shadow: 0 0 32px #FFD700, 0 0 64px #FF8C00, 0 0 80px #E07000 }
         }
         @keyframes sway {
           0%,100% { transform: rotate(-6deg) }
@@ -133,23 +133,22 @@ export default function GameOverOverlay({ result, onDismiss }) {
         className={`overlay fixed inset-0 z-50 flex items-center justify-center cursor-pointer overflow-hidden ${
           isWin
             ? 'bg-black/75'
-            : 'bg-gray-900/95'
+            : 'bg-zinc-950/95'
         }`}
         onClick={onDismiss}
       >
         {isWin  && <Confetti />}
         {!isWin && <Bubbles />}
 
-        {/* 失败：底部波浪层 */}
         {!isWin && (
           <div
-            className="wave absolute bottom-0 left-0 right-0 h-32 bg-blue-950/60"
+            className="wave absolute bottom-0 left-0 right-0 h-32 bg-zinc-800/50"
             style={{ marginBottom: -8 }}
           />
         )}
 
         <div className="card relative z-10 text-center select-none px-12 py-10 rounded-2xl"
-          style={{ background: isWin ? 'rgba(0,0,0,0.45)' : 'rgba(10,20,40,0.6)', backdropFilter: 'blur(8px)' }}
+          style={{ background: isWin ? 'rgba(0,0,0,0.45)' : 'rgba(15,20,30,0.7)', backdropFilter: 'blur(8px)' }}
         >
           <div className="text-8xl mb-5" style={{ lineHeight: 1 }}>
             {isWin
@@ -160,15 +159,15 @@ export default function GameOverOverlay({ result, onDismiss }) {
 
           {isWin ? (
             <div className="gold text-5xl font-black tracking-widest text-yellow-400">
-              胜 利 ！
+              V I C T O R Y
             </div>
           ) : (
-            <div className="text-5xl font-black tracking-widest text-blue-400">
-              落 败 …
+            <div className="text-5xl font-black tracking-widest text-zinc-400">
+              D E F E A T
             </div>
           )}
 
-          <p className="mt-6 text-gray-500 text-xs tracking-widest">点击任意处继续</p>
+          <p className="mt-6 text-zinc-600 text-sm tracking-widest">Click anywhere to continue</p>
         </div>
       </div>
     </>

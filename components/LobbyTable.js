@@ -2,27 +2,27 @@
 export default function LobbyTable({ rooms, onJoin }) {
   if (!rooms?.length) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-gray-600">
+      <div className="flex flex-col items-center justify-center py-12 text-zinc-600">
         <div className="text-3xl mb-2">🌊</div>
-        <p className="text-sm">暂无公开房间</p>
+        <p className="text-sm">No open battles</p>
       </div>
     )
   }
   return (
     <div className="space-y-2">
       {rooms.map(r => (
-        <div key={r.id} className="flex items-center justify-between px-3 py-2.5 bg-gray-800 border border-gray-700 rounded-lg">
+        <div key={r.id} className="flex items-center justify-between px-3 py-2.5 bg-zinc-900 border border-zinc-700 rounded-lg">
           <div>
-            <span className="text-sm text-gray-200">{r.hostNickname}</span>
-            <span className="ml-2 text-xs text-gray-600 font-mono">{r.id}</span>
+            <span className="text-sm text-zinc-200">{r.hostNickname}</span>
+            <span className="ml-2 text-sm text-zinc-600 font-mono tracking-widest">{r.id}</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-green-500">● 等待中</span>
+            <span className="text-sm text-emerald-500">● Waiting</span>
             <button
               onClick={() => onJoin(r.id)}
-              className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-xs font-medium transition-colors"
+              className="px-3 py-1 bg-sky-700 hover:bg-sky-600 text-zinc-100 rounded text-sm font-medium transition-colors"
             >
-              加入
+              Join
             </button>
           </div>
         </div>

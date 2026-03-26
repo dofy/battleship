@@ -4,7 +4,12 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['"Share Tech Mono"', 'ui-monospace', 'monospace'],
+        mono: ['"Share Tech Mono"', 'ui-monospace', 'monospace'],
+      },
+    },
   },
   plugins: [],
 }

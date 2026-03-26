@@ -1,10 +1,10 @@
 // components/GameStats.js
 const SHIPS = [
-  { name: '航空母舰', size: 5 },
-  { name: '战列舰',   size: 4 },
-  { name: '巡洋舰',   size: 3 },
-  { name: '驱逐舰',   size: 3 },
-  { name: '潜水艇',   size: 2 },
+  { name: 'Carrier',    size: 5 },
+  { name: 'Battleship', size: 4 },
+  { name: 'Cruiser',    size: 3 },
+  { name: 'Destroyer',  size: 3 },
+  { name: 'Submarine',  size: 2 },
 ]
 
 export default function GameStats({ roomState, myId, sunkShipNames = [] }) {
@@ -14,19 +14,19 @@ export default function GameStats({ roomState, myId, sunkShipNames = [] }) {
   const myAttackCount = me?.attacks?.flat().filter(Boolean).length || 0
 
   return (
-    <div className="space-y-4 w-40">
-      {/* 回合状态 */}
-      <div className={`px-3 py-2 rounded-lg border text-center text-sm font-bold ${
+    <div className="space-y-4 w-44">
+      {/* Turn indicator */}
+      <div className={`px-3 py-2 rounded-lg border text-center text-sm font-bold tracking-widest ${
         isMyTurn
-          ? 'bg-green-900 border-green-700 text-green-300'
-          : 'bg-gray-800 border-gray-700 text-gray-400'
+          ? 'bg-emerald-950 border-emerald-700 text-emerald-400'
+          : 'bg-zinc-900 border-zinc-700 text-zinc-500'
       }`}>
-        {isMyTurn ? '⚔ 你的回合' : '⏳ 对手回合'}
+        {isMyTurn ? '⚔ YOUR TURN' : '⏳ OPPONENT'}
       </div>
 
-      {/* 敌方舰队 */}
-      <div className="p-3 bg-gray-800 border border-gray-700 rounded-lg">
-        <div className="text-xs text-indigo-400 uppercase font-bold mb-2 tracking-wide">敌方舰队</div>
+      {/* Enemy fleet */}
+      <div className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
+        <div className="text-sm text-sky-400 uppercase font-bold mb-2 tracking-widest">Enemy Fleet</div>
         <div className="space-y-1.5">
           {SHIPS.map((s, i) => {
             const isSunk = sunkShipNames.includes(s.name)
@@ -36,11 +36,11 @@ export default function GameStats({ roomState, myId, sunkShipNames = [] }) {
                   {Array.from({ length: s.size }, (_, k) => (
                     <div
                       key={k}
-                      className={`w-3 h-3 rounded-sm ${isSunk ? 'bg-red-900' : 'bg-indigo-600'}`}
+                      className={`w-3 h-3 rounded-sm ${isSunk ? 'bg-red-950' : 'bg-teal-700'}`}
                     />
                   ))}
                 </div>
-                <span className={`text-xs ${isSunk ? 'text-gray-600 line-through' : 'text-gray-400'}`}>
+                <span className={`text-sm ${isSunk ? 'text-zinc-600 line-through' : 'text-zinc-400'}`}>
                   {s.name}
                 </span>
               </div>
@@ -49,16 +49,16 @@ export default function GameStats({ roomState, myId, sunkShipNames = [] }) {
         </div>
       </div>
 
-      {/* 战况 */}
-      <div className="p-3 bg-gray-800 border border-gray-700 rounded-lg">
-        <div className="text-xs text-indigo-400 uppercase font-bold mb-2 tracking-wide">战况</div>
-        <div className="text-xs text-gray-400 space-y-1">
+      {/* Battle stats */}
+      <div className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
+        <div className="text-sm text-sky-400 uppercase font-bold mb-2 tracking-widest">Stats</div>
+        <div className="text-sm text-zinc-400 space-y-1">
           <div className="flex justify-between">
-            <span>攻击次数</span>
-            <span className="text-gray-200 font-mono">{myAttackCount}</span>
+            <span>Shots fired</span>
+            <span className="text-zinc-200 font-mono">{myAttackCount}</span>
           </div>
           <div className="flex justify-between">
-            <span>击沉数</span>
+            <span>Sunk</span>
             <span className="text-red-400 font-mono">{sunkShipNames.length}</span>
           </div>
         </div>

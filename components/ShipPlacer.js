@@ -3,11 +3,11 @@ import { useState, useEffect, useCallback } from 'react'
 import Board from './Board'
 
 const SHIPS = [
-  { name: '航空母舰', size: 5 },
-  { name: '战列舰',   size: 4 },
-  { name: '巡洋舰',   size: 3 },
-  { name: '驱逐舰',   size: 3 },
-  { name: '潜水艇',   size: 2 },
+  { name: 'Carrier',    size: 5 },
+  { name: 'Battleship', size: 4 },
+  { name: 'Cruiser',    size: 3 },
+  { name: 'Destroyer',  size: 3 },
+  { name: 'Submarine',  size: 2 },
 ]
 
 function createEmptyBoard() {
@@ -103,15 +103,15 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
 
   return (
     <div className="space-y-4">
-      {/* 倒计时条 */}
+      {/* Placement countdown */}
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
+        <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all duration-500 ${secondsLeft > 30 ? 'bg-indigo-500' : 'bg-red-500'}`}
+            className={`h-full rounded-full transition-all duration-500 ${secondsLeft > 30 ? 'bg-sky-600' : 'bg-red-500'}`}
             style={{ width: `${pct}%` }}
           />
         </div>
-        <span className={`text-sm font-bold font-mono w-12 text-right ${secondsLeft <= 30 ? 'text-red-400' : 'text-gray-300'}`}>
+        <span className={`text-sm font-bold font-mono w-12 text-right ${secondsLeft <= 30 ? 'text-red-400' : 'text-zinc-300'}`}>
           {secondsLeft}s
         </span>
       </div>
@@ -121,46 +121,46 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
           board={board}
           onCellClick={handleCellClick}
           interactive={!ready && !allPlaced}
-          label="点击棋盘放置舰船"
+          label="Click grid to place ships"
         />
 
         <div className="space-y-3 w-44">
-          {/* 当前待放置 */}
+          {/* Current ship */}
           {!ready && (
-            <div className="p-3 bg-gray-800 border border-gray-700 rounded-lg">
+            <div className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
               {currentShip ? (
                 <>
-                  <div className="text-xs text-indigo-400 font-bold uppercase mb-1">当前放置</div>
-                  <div className="text-white font-medium text-sm mb-2">{currentShip.name}</div>
+                  <div className="text-sm text-sky-400 font-bold uppercase mb-1 tracking-widest">Placing</div>
+                  <div className="text-zinc-100 font-medium text-sm mb-2">{currentShip.name}</div>
                   <div className="flex gap-0.5 mb-2">
                     {Array.from({ length: currentShip.size }, (_, k) => (
-                      <div key={k} className="w-4 h-4 bg-indigo-500 rounded-sm" />
+                      <div key={k} className="w-4 h-4 bg-teal-600 rounded-sm" />
                     ))}
                   </div>
                   <button
                     onClick={() => setDirection(d => d === 'H' ? 'V' : 'H')}
-                    className="w-full py-1 text-xs text-gray-300 bg-gray-700 hover:bg-gray-600 rounded transition-colors"
+                    className="w-full py-1 text-sm text-zinc-300 bg-zinc-700 hover:bg-zinc-600 rounded transition-colors"
                   >
-                    方向: {direction === 'H' ? '➡ 水平' : '⬇ 垂直'}
+                    Dir: {direction === 'H' ? '➡ Horiz' : '⬇ Vert'}
                   </button>
                 </>
               ) : (
-                <p className="text-green-400 text-sm font-medium">✓ 所有舰船已放置</p>
+                <p className="text-emerald-400 text-sm font-medium">✓ Fleet ready</p>
               )}
             </div>
           )}
 
-          {/* 舰船列表 */}
+          {/* Ship list */}
           <div className="space-y-1">
             {SHIPS.map((s, i) => (
-              <div key={i} className={`flex items-center gap-2 text-xs px-2 py-1.5 rounded-md ${
-                i === shipIdx    ? 'bg-indigo-900 border border-indigo-600 text-white' :
-                i < shipIdx      ? 'text-gray-600 line-through' :
-                'text-gray-500'
+              <div key={i} className={`flex items-center gap-2 text-sm px-2 py-1.5 rounded-md ${
+                i === shipIdx    ? 'bg-sky-950 border border-sky-700 text-zinc-100' :
+                i < shipIdx      ? 'text-zinc-600 line-through' :
+                'text-zinc-500'
               }`}>
                 <div className="flex gap-0.5">
                   {Array.from({ length: s.size }, (_, k) => (
-                    <div key={k} className={`w-2.5 h-2.5 rounded-sm ${i < shipIdx ? 'bg-gray-700' : 'bg-indigo-500'}`} />
+                    <div key={k} className={`w-2.5 h-2.5 rounded-sm ${i < shipIdx ? 'bg-zinc-700' : 'bg-teal-600'}`} />
                   ))}
                 </div>
                 {s.name}
@@ -168,45 +168,45 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
             ))}
           </div>
 
-          {/* 操作按钮 */}
+          {/* Action buttons */}
           <div className="space-y-2">
             <button
               onClick={handleRandom}
               disabled={ready}
-              className="w-full py-1.5 text-xs text-gray-300 bg-gray-700 hover:bg-gray-600 rounded transition-colors disabled:opacity-40"
+              className="w-full py-1.5 text-sm text-zinc-300 bg-zinc-700 hover:bg-zinc-600 rounded transition-colors disabled:opacity-40"
             >
-              🔀 随机布置
+              🔀 Random Deploy
             </button>
 
             {(placements.length > 0 || isRandom) && !ready && (
               <button
                 onClick={handleUndo}
-                className="w-full py-1.5 text-xs text-gray-300 bg-gray-700 hover:bg-gray-600 rounded transition-colors"
+                className="w-full py-1.5 text-sm text-zinc-300 bg-zinc-700 hover:bg-zinc-600 rounded transition-colors"
               >
-                {isRandom ? '↺ 清空重置' : `↩ 撤销 (${placements.length})`}
+                {isRandom ? '↺ Clear All' : `↩ Undo (${placements.length})`}
               </button>
             )}
 
             {placements.length > 1 && !isRandom && !ready && (
               <button
                 onClick={handleClear}
-                className="w-full py-1.5 text-xs text-red-400 bg-red-900 hover:bg-red-800 rounded transition-colors"
+                className="w-full py-1.5 text-sm text-red-400 bg-red-950 hover:bg-red-900 rounded transition-colors"
               >
-                ✕ 清空全部
+                ✕ Clear All
               </button>
             )}
 
             {allPlaced && !ready && (
               <button
                 onClick={handleSubmit}
-                className="w-full py-2 text-sm text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold transition-colors"
+                className="w-full py-2 text-sm text-zinc-100 bg-sky-700 hover:bg-sky-600 rounded-lg font-bold tracking-widest transition-colors"
               >
-                ✓ 确认布局
+                ✓ CONFIRM FLEET
               </button>
             )}
 
             {ready && (
-              <p className="text-center text-green-400 text-sm py-1">✓ 等待对手...</p>
+              <p className="text-center text-emerald-400 text-sm py-1">✓ Awaiting opponent...</p>
             )}
           </div>
         </div>
