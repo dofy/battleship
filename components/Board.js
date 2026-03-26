@@ -40,7 +40,7 @@ export default function Board({
   function cellClass(cell, r, c) {
     const isSunk  = sunkCells?.has(`${r},${c}`)
     const shape   = shipShape(cell)
-    const base    = `w-7 h-7 sm:w-8 sm:h-8 border border-zinc-800 ${shape} flex items-center justify-center text-xs sm:text-sm font-bold transition-colors relative overflow-visible `
+    const base    = `w-8 h-8 sm:w-9 sm:h-9 border border-zinc-800 ${shape} flex items-center justify-center text-xs sm:text-sm font-bold transition-colors relative overflow-visible `
     if (isSunk && cell.attacked && cell.hasShip) return base + 'bg-orange-950 border-orange-700 text-orange-400 cursor-default'
     if (cell.attacked && cell.hasShip)           return base + 'bg-red-800 text-red-200 cursor-default'
     if (cell.attacked && !cell.hasShip)          return base + 'bg-zinc-800 text-zinc-600 cursor-default'
@@ -54,7 +54,7 @@ export default function Board({
     const color = preview.valid
       ? 'bg-teal-600/40 border-teal-400/60'
       : 'bg-red-600/40  border-red-400/60'
-    return `w-7 h-7 sm:w-8 sm:h-8 border ${shape} ${color} flex items-center justify-center relative overflow-visible transition-colors`
+    return `w-8 h-8 sm:w-9 sm:h-9 border ${shape} ${color} flex items-center justify-center relative overflow-visible transition-colors`
   }
 
   return (
@@ -108,15 +108,16 @@ export default function Board({
         className={`inline-block p-1.5 sm:p-2 bg-zinc-900 border border-zinc-700 rounded-lg ${isShaking ? 'shake-board' : ''}`}
         onMouseLeave={onBoardLeave}
         onAnimationEnd={() => setIsShaking(false)}
+        style={{ touchAction: 'manipulation' }}
       >
-        <div className="flex ml-5 sm:ml-6 mb-0.5">
+        <div className="flex ml-6 sm:ml-7 mb-0.5">
           {cols.map(c => (
-            <div key={c} className="w-7 sm:w-8 text-center text-xs text-zinc-600 font-mono">{c}</div>
+            <div key={c} className="w-8 sm:w-9 text-center text-xs text-zinc-600 font-mono">{c}</div>
           ))}
         </div>
         {board.map((row, r) => (
           <div key={r} className="flex items-center">
-            <div className="w-5 sm:w-6 text-xs text-zinc-600 text-right pr-1 font-mono">{r}</div>
+            <div className="w-6 sm:w-7 text-xs text-zinc-600 text-right pr-1 font-mono">{r}</div>
             {row.map((cell, c) => {
               const key     = `${r},${c}`
               const pCell   = previewMap?.[key]

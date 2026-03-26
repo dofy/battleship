@@ -70,7 +70,7 @@ export default function Home() {
       <Head><title>⚓ Battleship</title></Head>
 
       {/* Header */}
-      <div className="border-b border-zinc-800 px-6 py-4 flex items-center gap-3">
+      <div className="border-b border-zinc-800 px-4 sm:px-6 py-4 flex items-center gap-3">
         <span className="text-2xl">⚓</span>
         <h1 className="text-xl font-bold text-zinc-100 tracking-widest">BATTLESHIP</h1>
         <span className="text-zinc-600 text-sm hidden sm:inline">Naval Combat · 1v1 Live</span>
@@ -90,18 +90,20 @@ export default function Home() {
               value={nickname}
               onChange={e => { setNickname(e.target.value); setError('') }}
               onKeyDown={e => e.key === 'Enter' && handleCreate()}
-              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm outline-none focus:border-sky-600 transition-colors"
+              className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-3 text-base outline-none focus:border-sky-600 transition-colors"
               placeholder="Enter callsign..."
+              autoComplete="off"
+              autoCapitalize="off"
             />
           </div>
 
           {/* Public toggle */}
-          <label className="flex items-center gap-2 text-sm text-zinc-400 cursor-pointer select-none">
+          <label className="flex items-center gap-3 text-sm text-zinc-400 cursor-pointer select-none py-1">
             <input
               type="checkbox"
               checked={isPublic}
               onChange={e => setIsPublic(e.target.checked)}
-              className="rounded"
+              className="rounded w-4 h-4"
             />
             Public (visible in lobby)
           </label>
@@ -109,7 +111,7 @@ export default function Home() {
           {/* Create button */}
           <button
             onClick={handleCreate}
-            className="w-full py-2.5 bg-sky-700 hover:bg-sky-600 rounded-lg font-bold text-sm tracking-widest transition-colors"
+            className="w-full py-3 bg-sky-700 hover:bg-sky-600 active:bg-sky-800 rounded-lg font-bold text-sm tracking-widest transition-colors"
           >
             + NEW BATTLE
           </button>
@@ -131,11 +133,13 @@ export default function Home() {
                 onKeyDown={e => e.key === 'Enter' && handleJoin()}
                 placeholder="XXXXXX"
                 maxLength={6}
-                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm font-mono outline-none focus:border-sky-600 transition-colors min-w-0 tracking-widest"
+                className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-3 text-base font-mono outline-none focus:border-sky-600 transition-colors min-w-0 tracking-widest"
+                autoComplete="off"
+                autoCapitalize="characters"
               />
               <button
                 onClick={() => handleJoin()}
-                className="px-3 py-2 border border-sky-700 text-sky-400 hover:bg-sky-900 rounded-lg text-sm whitespace-nowrap transition-colors"
+                className="px-4 py-3 border border-sky-700 text-sky-400 hover:bg-sky-900 active:bg-sky-950 rounded-lg text-sm font-bold whitespace-nowrap transition-colors"
               >
                 Join
               </button>
@@ -143,26 +147,26 @@ export default function Home() {
           </div>
 
           {error && (
-            <p className="text-red-400 text-sm bg-red-950 border border-red-800 rounded px-2 py-1">
+            <p className="text-red-400 text-sm bg-red-950 border border-red-800 rounded-lg px-3 py-2">
               ⚠ {error}
             </p>
           )}
 
           {/* Combat record */}
           <div className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
-            <div className="text-sm text-sky-400 uppercase font-bold mb-2 tracking-widest">Combat Record</div>
-            <div className="space-y-1">
-              <div className="flex justify-between text-sm">
+            <div className="text-xs text-sky-400 uppercase font-bold mb-2 tracking-widest">Combat Record</div>
+            <div className="flex gap-4 sm:block sm:space-y-1">
+              <div className="flex justify-between text-sm flex-1 sm:flex-none">
                 <span className="text-zinc-400">🏆 Wins</span>
-                <span className="text-zinc-200 font-mono">{stats.wins}</span>
+                <span className="text-zinc-200 font-mono ml-2">{stats.wins}</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm flex-1 sm:flex-none">
                 <span className="text-zinc-400">💀 Losses</span>
-                <span className="text-zinc-200 font-mono">{stats.losses}</span>
+                <span className="text-zinc-200 font-mono ml-2">{stats.losses}</span>
               </div>
-              <div className="flex justify-between text-sm pt-1 border-t border-zinc-700">
+              <div className="flex justify-between text-sm flex-1 sm:flex-none sm:pt-1 sm:border-t sm:border-zinc-700">
                 <span className="text-zinc-500">Win Rate</span>
-                <span className="text-sky-400 font-mono font-bold">{winRate}%</span>
+                <span className="text-sky-400 font-mono font-bold ml-2">{winRate}%</span>
               </div>
             </div>
           </div>
@@ -174,7 +178,7 @@ export default function Home() {
             <div className="text-sm text-sky-400 uppercase font-bold tracking-widest">Open Battles</div>
             <button
               onClick={() => socketRef.current?.emit('room:list')}
-              className="text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+              className="text-sm text-zinc-500 hover:text-zinc-300 active:text-zinc-100 transition-colors px-2 py-1"
             >
               ↺ Refresh
             </button>

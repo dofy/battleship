@@ -147,10 +147,10 @@ export default function GameOverOverlay({ result, onDismiss }) {
           />
         )}
 
-        <div className="card relative z-10 text-center select-none px-12 py-10 rounded-2xl"
+        <div className="card relative z-10 text-center select-none px-8 py-8 sm:px-12 sm:py-10 rounded-2xl mx-4"
           style={{ background: isWin ? 'rgba(0,0,0,0.45)' : 'rgba(15,20,30,0.7)', backdropFilter: 'blur(8px)' }}
         >
-          <div className="text-8xl mb-5" style={{ lineHeight: 1 }}>
+          <div className="text-7xl sm:text-8xl mb-4 sm:mb-5" style={{ lineHeight: 1 }}>
             {isWin
               ? <span className="animate-bounce inline-block">🏆</span>
               : <span className="skull">💀</span>
@@ -158,16 +158,16 @@ export default function GameOverOverlay({ result, onDismiss }) {
           </div>
 
           {isWin ? (
-            <div className="gold text-5xl font-black tracking-widest text-yellow-400">
+            <div className="gold text-4xl sm:text-5xl font-black tracking-widest text-yellow-400">
               V I C T O R Y
             </div>
           ) : (
-            <div className="text-5xl font-black tracking-widest text-zinc-400">
+            <div className="text-4xl sm:text-5xl font-black tracking-widest text-zinc-400">
               D E F E A T
             </div>
           )}
 
-          <p className="mt-6 text-zinc-600 text-sm tracking-widest">Click anywhere to continue</p>
+          <p className="mt-5 text-zinc-600 text-sm tracking-widest">Tap anywhere to continue</p>
         </div>
       </div>
     </>

@@ -257,26 +257,26 @@ export default function RoomPage() {
       )}
 
       {/* Nav */}
-      <div className="border-b border-zinc-800 px-6 py-4 flex items-center justify-between">
+      <div className="border-b border-zinc-800 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-xl">⚓</span>
           <span className="font-bold text-zinc-100 tracking-widest">BATTLESHIP</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <div className="text-sm text-zinc-600">
-            Room
-            <span className="ml-1.5 text-sky-400 font-mono font-bold tracking-widest">{roomId}</span>
+            <span className="hidden sm:inline">Room </span>
+            <span className="text-sky-400 font-mono font-bold tracking-widest">{roomId}</span>
           </div>
           <button
             onClick={handleLeave}
-            className="text-sm text-zinc-500 hover:text-zinc-300 px-2 py-1 border border-zinc-700 rounded transition-colors"
+            className="text-sm text-zinc-500 hover:text-zinc-300 active:text-zinc-100 px-3 py-2 border border-zinc-700 rounded-lg transition-colors"
           >
             Leave
           </button>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
 
         {/* Status bar: always reserved during playing/finished to prevent layout shift */}
         {(status === 'playing' || status === 'finished' || message) && (
@@ -359,10 +359,10 @@ export default function RoomPage() {
 
         {/* Game over actions */}
         {status === 'finished' && (
-          <div className="mt-8 flex gap-3 items-center">
+          <div className="mt-6 flex gap-3 items-center">
             <button
               onClick={handleRematch}
-              className="px-6 py-2.5 bg-sky-700 hover:bg-sky-600 rounded-lg font-bold tracking-widest transition-colors"
+              className="flex-1 sm:flex-none px-6 py-3 bg-sky-700 hover:bg-sky-600 active:bg-sky-800 rounded-lg font-bold tracking-widest transition-colors text-center"
             >
               REMATCH
               <span className="ml-1.5 text-sky-300 text-sm font-normal">
@@ -371,7 +371,7 @@ export default function RoomPage() {
             </button>
             <button
               onClick={handleLeave}
-              className="px-6 py-2.5 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-zinc-300 transition-colors"
+              className="flex-1 sm:flex-none px-6 py-3 bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 rounded-lg text-zinc-300 transition-colors text-center"
             >
               Back to Lobby
             </button>

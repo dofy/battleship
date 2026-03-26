@@ -135,7 +135,7 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
   const preview = getPreview()
 
   return (
-    <div className="space-y-4">
+    <div className="w-full space-y-4">
       {/* Placement countdown */}
       <div className="flex items-center gap-3">
         <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
@@ -149,7 +149,8 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
         </span>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-center sm:items-start">
+      <div className="flex flex-col items-center gap-4">
+        {/* Board */}
         <div>
           <Board
             board={board}
@@ -170,52 +171,54 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
           </div>
         </div>
 
-        <div className="space-y-3 w-44">
-          {/* Current ship */}
-          {!ready && (
-            <div className="p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
-              {currentShip ? (
-                <>
-                  <div className="text-xs text-sky-400 font-bold uppercase mb-1 tracking-widest">Placing</div>
-                  <div className="text-zinc-100 font-medium text-sm mb-2">{currentShip.name}</div>
-                  <div className="flex gap-0.5 mb-3">
-                    {Array.from({ length: currentShip.size }, (_, k) => (
-                      <div key={k} className={`h-4 bg-teal-600 ${
-                        k === 0                          ? 'w-4 rounded-l-full rounded-r-none'
-                        : k === currentShip.size - 1    ? 'w-4 rounded-r rounded-l-none'
-                        : 'w-4 rounded-none'
-                      }`} />
-                    ))}
-                  </div>
-                  {/* Direction toggle */}
-                  <button
-                    onClick={() => setDirection(d => d === 'H' ? 'V' : 'H')}
-                    className="w-full py-1.5 text-xs text-zinc-300 bg-zinc-700 hover:bg-zinc-600 rounded transition-colors flex items-center justify-center gap-2"
-                  >
-                    <span className={`text-base leading-none transition-transform duration-200 ${direction === 'V' ? 'rotate-90' : ''}`}>
-                      ➔
-                    </span>
-                    <span className="tracking-widest">{direction === 'H' ? 'HORIZONTAL' : 'VERTICAL'}</span>
-                  </button>
-                  <p className="text-zinc-600 text-xs text-center mt-1">Space to rotate</p>
-                </>
-              ) : (
-                <p className="text-emerald-400 text-sm font-medium">✓ Fleet ready</p>
-              )}
+        {/* Controls panel — horizontal on mobile, compact */}
+        <div className="w-full max-w-sm space-y-3">
+
+          {/* Current ship + direction */}
+          {!ready && currentShip && (
+            <div className="flex items-center gap-3 p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-sky-400 font-bold uppercase tracking-widest mb-1">Placing</div>
+                <div className="text-zinc-100 font-medium text-sm">{currentShip.name}</div>
+                <div className="flex gap-0.5 mt-1.5">
+                  {Array.from({ length: currentShip.size }, (_, k) => (
+                    <div key={k} className={`h-3.5 bg-teal-600 ${
+                      k === 0                          ? 'w-3.5 rounded-l-full rounded-r-none'
+                      : k === currentShip.size - 1    ? 'w-3.5 rounded-r rounded-l-none'
+                      : 'w-3.5 rounded-none'
+                    }`} />
+                  ))}
+                </div>
+              </div>
+              <button
+                onClick={() => setDirection(d => d === 'H' ? 'V' : 'H')}
+                className="flex flex-col items-center gap-1 px-4 py-2.5 text-xs text-zinc-300 bg-zinc-700 hover:bg-zinc-600 active:bg-zinc-500 rounded-lg transition-colors flex-shrink-0"
+              >
+                <span className={`text-lg leading-none transition-transform duration-200 ${direction === 'V' ? 'rotate-90' : ''}`}>
+                  ➔
+                </span>
+                <span className="tracking-widest">{direction === 'H' ? 'H' : 'V'}</span>
+              </button>
             </div>
           )}
 
-          {/* Ship list */}
-          <div className="space-y-1">
+          {!ready && allPlaced && (
+            <div className="flex items-center gap-2 p-3 bg-zinc-900 border border-zinc-700 rounded-lg">
+              <span className="text-emerald-400 text-sm font-medium">✓ Fleet ready</span>
+            </div>
+          )}
+
+          {/* Ship list — horizontal scroll on mobile */}
+          <div className="flex gap-2 overflow-x-auto pb-1">
             {SHIPS.map((s, i) => (
-              <div key={i} className={`flex items-center gap-2 text-sm px-2 py-1.5 rounded-md ${
+              <div key={i} className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md whitespace-nowrap flex-shrink-0 ${
                 i === shipIdx ? 'bg-sky-950 border border-sky-700 text-zinc-100' :
-                i < shipIdx   ? 'text-zinc-600 line-through' :
-                'text-zinc-500'
+                i < shipIdx   ? 'text-zinc-600 line-through bg-zinc-900' :
+                'text-zinc-500 bg-zinc-900'
               }`}>
                 <div className="flex gap-0.5">
                   {Array.from({ length: s.size }, (_, k) => (
-                    <div key={k} className={`w-2.5 h-2.5 rounded-sm ${i < shipIdx ? 'bg-zinc-700' : 'bg-teal-600'}`} />
+                    <div key={k} className={`w-2 h-2 rounded-sm ${i < shipIdx ? 'bg-zinc-700' : 'bg-teal-600'}`} />
                   ))}
                 </div>
                 {s.name}
@@ -224,46 +227,46 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
           </div>
 
           {/* Action buttons */}
-          <div className="space-y-2">
+          <div className="flex gap-2">
             <button
               onClick={handleRandom}
               disabled={ready}
-              className="w-full py-1.5 text-sm text-zinc-300 bg-zinc-700 hover:bg-zinc-600 rounded transition-colors disabled:opacity-40"
+              className="flex-1 py-3 text-sm text-zinc-300 bg-zinc-700 hover:bg-zinc-600 active:bg-zinc-500 rounded-lg transition-colors disabled:opacity-40"
             >
-              🔀 Random Deploy
+              🔀 Random
             </button>
 
             {(placements.length > 0 || isRandom) && !ready && (
               <button
                 onClick={handleUndo}
-                className="w-full py-1.5 text-sm text-zinc-300 bg-zinc-700 hover:bg-zinc-600 rounded transition-colors"
+                className="flex-1 py-3 text-sm text-zinc-300 bg-zinc-700 hover:bg-zinc-600 active:bg-zinc-500 rounded-lg transition-colors"
               >
-                {isRandom ? '↺ Clear All' : `↩ Undo (${placements.length})`}
+                {isRandom ? '↺ Clear' : `↩ Undo`}
               </button>
             )}
 
             {placements.length > 1 && !isRandom && !ready && (
               <button
                 onClick={handleClear}
-                className="w-full py-1.5 text-sm text-red-400 bg-red-950 hover:bg-red-900 rounded transition-colors"
+                className="flex-1 py-3 text-sm text-red-400 bg-red-950 hover:bg-red-900 active:bg-red-800 rounded-lg transition-colors"
               >
-                ✕ Clear All
+                ✕ Clear
               </button>
-            )}
-
-            {allPlaced && !ready && (
-              <button
-                onClick={handleSubmit}
-                className="w-full py-2 text-sm text-zinc-100 bg-sky-700 hover:bg-sky-600 rounded-lg font-bold tracking-widest transition-colors"
-              >
-                ✓ CONFIRM FLEET
-              </button>
-            )}
-
-            {ready && (
-              <p className="text-center text-emerald-400 text-sm py-1">✓ Awaiting opponent...</p>
             )}
           </div>
+
+          {allPlaced && !ready && (
+            <button
+              onClick={handleSubmit}
+              className="w-full py-3.5 text-sm text-zinc-100 bg-sky-700 hover:bg-sky-600 active:bg-sky-800 rounded-lg font-bold tracking-widest transition-colors"
+            >
+              ✓ CONFIRM FLEET
+            </button>
+          )}
+
+          {ready && (
+            <p className="text-center text-emerald-400 text-sm py-2">✓ Awaiting opponent...</p>
+          )}
         </div>
       </div>
     </div>
