@@ -6,11 +6,11 @@ export default function Board({ board, onCellClick, interactive = false, label, 
     if (!cell.hasShip) return 'rounded-sm'
     if (!cell.isBow && !cell.isStern) return 'rounded-none'
     if (cell.shipDir === 'H') {
-      if (cell.isBow)   return 'rounded-l-xl rounded-r-none'
-      if (cell.isStern) return 'rounded-r    rounded-l-none'
+      if (cell.isBow)   return 'rounded-l-full rounded-r-none'
+      if (cell.isStern) return 'rounded-r-lg   rounded-l-none'
     } else {
-      if (cell.isBow)   return 'rounded-t-xl rounded-b-none'
-      if (cell.isStern) return 'rounded-b    rounded-t-none'
+      if (cell.isBow)   return 'rounded-t-full rounded-b-none'
+      if (cell.isStern) return 'rounded-b-lg   rounded-t-none'
     }
     return 'rounded-sm'
   }
