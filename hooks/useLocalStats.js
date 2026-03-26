@@ -14,13 +14,17 @@ export function useLocalStats() {
   const [stats, setStats] = useState(readStats)
 
   const recordWin = useCallback(() => {
-    const next = { ...readStats(), wins: readStats().wins + 1 }
+    if (typeof window === 'undefined') return
+    const current = readStats()
+    const next = { ...current, wins: current.wins + 1 }
     localStorage.setItem(KEY, JSON.stringify(next))
     setStats(next)
   }, [])
 
   const recordLoss = useCallback(() => {
-    const next = { ...readStats(), losses: readStats().losses + 1 }
+    if (typeof window === 'undefined') return
+    const current = readStats()
+    const next = { ...current, losses: current.losses + 1 }
     localStorage.setItem(KEY, JSON.stringify(next))
     setStats(next)
   }, [])

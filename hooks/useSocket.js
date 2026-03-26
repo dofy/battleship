@@ -12,13 +12,12 @@ export function useSocket() {
     socket.on('connect', () => setConnected(true))
     socket.on('disconnect', () => {
       setConnected(false)
-      // 断线时跳转首页
-      if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+      if (window.location.pathname !== '/') {
         window.location.href = '/'
       }
     })
     return () => socket.disconnect()
   }, [])
 
-  return { socket: socketRef.current, connected }
+  return { socketRef, connected }
 }
