@@ -1,0 +1,45 @@
+<h2>三种整体架构方案</h2>
+<p class="subtitle">基于你的需求：Socket.IO + VPS 自托管 + 私人/公开房间</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Next.js Custom Server + Socket.IO（推荐）</h3>
+      <p>用 Next.js 自定义 server.js 把 HTTP 服务和 Socket.IO 跑在同一个 Node.js 进程里。游戏状态完全在内存中管理，无需数据库。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>单进程，部署极简（pm2 一条命令）</li><li>无数据库依赖</li><li>游戏状态在内存，响应极快</li><li>与现有 Next.js 项目无缝集成</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>服务重启丢失所有房间状态</li><li>单节点，无法水平扩展</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>独立 Express + Socket.IO 服务 + Next.js 前端分离</h3>
+      <p>Socket.IO 服务器作为独立的 Express 应用，Next.js 前端单独运行，前端通过 API + WebSocket 与服务通信。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>前后端职责清晰</li><li>可独立扩展</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>跨域配置</li><li>需管理两个进程</li><li>对这个项目体量过度设计</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Next.js Custom Server + Socket.IO + Redis 房间持久化</h3>
+      <p>在方案 A 基础上加入 Redis 持久化游戏状态，服务重启或多节点时状态不丢失。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>状态持久，重启不丢房间</li><li>为未来多节点扩展留路</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>引入 Redis 依赖，VPS 需多装一个服务</li><li>对休闲小游戏稍显复杂</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px; padding: 12px 16px; background: rgba(99,102,241,0.08); border-radius: 8px; border-left: 3px solid #6366f1;">
+  <span class="label">推荐</span>
+  <p style="margin:4px 0 0">方案 A 最适合这个项目：单进程部署、无外部依赖、对战游戏本身就是短暂会话，服务重启只影响进行中的对局，完全可接受。</p>
+</div>

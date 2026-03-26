@@ -1,0 +1,40 @@
+<h2>项目部署方式</h2>
+<p class="subtitle">Socket.IO 需要长连接，不同部署方式架构差异较大</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>本地 / VPS 自托管（推荐）</h3>
+      <p>将 Next.js 前端 + Socket.IO 服务器合并为一个 Node.js 进程，用 pm2 或 Docker 部署在自己的服务器上。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>WebSocket 全功能支持</li><li>前后端同一进程，最简架构</li><li>无平台限制</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>需要自己维护服务器</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Vercel（前端）+ Railway / Render（Socket 服务）</h3>
+      <p>Next.js 部署在 Vercel，Socket.IO 独立部署在支持长连接的平台（Railway/Render 免费套餐即可）。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>前端依然享受 Vercel CDN</li><li>Socket 服务独立扩展</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>跨域配置</li><li>管理两个服务</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>只本地开发，不考虑部署</h3>
+      <p>先把游戏做完，部署的事之后再说。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>架构最自由</li><li>开发最快</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>上线时可能需要重构</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,40 @@
+<h2>实时联网对战的技术方案</h2>
+<p class="subtitle">多人实时游戏的核心是通信层，请选择你偏好的方案</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Socket.IO（推荐）</h3>
+      <p>WebSocket + 自动降级，专为实时应用设计。可在现有 Next.js 项目中添加独立 Socket.IO 服务器（Node.js），或使用 Vercel Edge Functions。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>双向实时通信</li><li>自动重连</li><li>房间/命名空间支持</li><li>成熟稳定</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>需要单独的 WebSocket 服务</li><li>Vercel 无服务器部署受限</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Supabase Realtime</h3>
+      <p>基于 PostgreSQL 的实时订阅，通过 Supabase 托管的 WebSocket 通道传递游戏状态。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>无需维护 WebSocket 服务器</li><li>自带数据库持久化</li><li>免费套餐够用</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>引入外部服务依赖</li><li>延迟略高（经过数据库）</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Partykit</h3>
+      <p>专为多人实时 Web 应用设计的托管平台，边缘部署，与 Next.js 原生集成。</p>
+      <div class="pros-cons">
+        <div class="pros"><h4>优点</h4><ul><li>为多人游戏/协作量身定制</li><li>边缘部署低延迟</li><li>简单的房间 API</li></ul></div>
+        <div class="cons"><h4>缺点</h4><ul><li>较新平台，生态相对小</li><li>有使用成本</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

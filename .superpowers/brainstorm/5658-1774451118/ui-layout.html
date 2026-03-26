@@ -1,0 +1,173 @@
+<h2>页面 UI 设计概览</h2>
+<p class="subtitle">三个核心页面的布局结构</p>
+
+<style>
+.page-section { margin-bottom: 32px; }
+.page-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6366f1; margin-bottom: 10px; }
+.mock-board { display: grid; grid-template-columns: repeat(10, 22px); grid-template-rows: repeat(10, 22px); gap: 2px; }
+.mock-cell { width: 22px; height: 22px; background: #1e3a5f; border: 1px solid #2d5a8e; border-radius: 2px; }
+.mock-cell.ship { background: #6366f1; }
+.mock-cell.hit { background: #ef4444; }
+.mock-cell.miss { background: #374151; }
+.mock-cell.sunk { background: #7c2d12; }
+.boards-wrap { display: flex; gap: 24px; align-items: flex-start; }
+.board-label { font-size: 12px; color: #94a3b8; margin-bottom: 6px; text-align: center; }
+.game-layout { display: flex; gap: 20px; }
+.game-sidebar { width: 160px; flex-shrink: 0; }
+.status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.turn-mine { background: #16a34a22; color: #16a34a; border: 1px solid #16a34a44; }
+.turn-other { background: #dc262622; color: #dc2626; border: 1px solid #dc262644; }
+.ship-list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.ship-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94a3b8; }
+.ship-blocks { display: flex; gap: 2px; }
+.ship-block { width: 14px; height: 14px; background: #6366f1; border-radius: 2px; }
+.ship-block.sunk { background: #374151; }
+.lobby-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.lobby-table th { text-align: left; padding: 6px 10px; color: #6366f1; border-bottom: 1px solid #1e3a5f; }
+.lobby-table td { padding: 6px 10px; border-bottom: 1px solid #1a2744; }
+.join-btn { padding: 2px 10px; background: #6366f1; color: white; border-radius: 4px; font-size: 12px; cursor: pointer; border: none; }
+.timer-bar { height: 6px; background: #1e3a5f; border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.timer-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #06b6d4); border-radius: 3px; width: 65%; }
+</style>
+
+<!-- 页面 1：首页 / 大厅 -->
+<div class="page-section">
+  <div class="page-title">页面 1 — 首页 / 公开大厅</div>
+  <div class="mockup">
+    <div class="mockup-header">🚢 Battleship! — 首页</div>
+    <div class="mockup-body" style="display:flex; gap:24px;">
+      <!-- 左侧操作区 -->
+      <div style="width:220px; flex-shrink:0;">
+        <div style="margin-bottom:16px;">
+          <div class="label" style="margin-bottom:4px;">你的昵称</div>
+          <input class="mock-input" value="舰长seven" style="width:100%;">
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button class="mock-button" style="background:#6366f1;color:white;border:none;">+ 创建新房间</button>
+          <div style="display:flex;gap:6px;">
+            <input class="mock-input" placeholder="输入房间码" style="flex:1;">
+            <button class="mock-button" style="background:#0f172a;color:#6366f1;border:1px solid #6366f1;white-space:nowrap;">加入</button>
+          </div>
+        </div>
+        <div style="margin-top:16px; padding:10px; background:#0f172a; border-radius:6px; border:1px solid #1e3a5f;">
+          <div class="label">本地战绩</div>
+          <div style="font-size:12px; color:#94a3b8; margin-top:6px;">
+            <div>🏆 胜场：12</div>
+            <div>💀 败场：8</div>
+            <div>胜率：60%</div>
+          </div>
+        </div>
+      </div>
+      <!-- 右侧大厅列表 -->
+      <div style="flex:1;">
+        <div class="label" style="margin-bottom:8px;">公开房间大厅</div>
+        <table class="lobby-table">
+          <thead><tr><th>房主</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>海盗船长</td><td><span style="color:#16a34a;">等待中</span></td><td><button class="join-btn">加入</button></td></tr>
+            <tr><td>深海猎手</td><td><span style="color:#16a34a;">等待中</span></td><td><button class="join-btn">加入</button></td></tr>
+            <tr><td>鱼雷侠</td><td><span style="color:#94a3b8;">游戏中</span></td><td><button class="join-btn" style="background:#374151;">旁观</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 页面 2：布局阶段 -->
+<div class="page-section">
+  <div class="page-title">页面 2 — 布局阶段（90秒倒计时）</div>
+  <div class="mockup">
+    <div class="mockup-header">🚢 布置你的舰队 — 等待对手中 (1/2)</div>
+    <div class="mockup-body">
+      <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:13px; color:#94a3b8;">拖拽舰船到棋盘，或点击自动随机布置</span>
+        <span style="font-size:18px; font-weight:700; color:#f59e0b;">⏱ 58s</span>
+      </div>
+      <div class="timer-bar"><div class="timer-fill" style="width:65%;"></div></div>
+      <div style="display:flex; gap:24px; margin-top:16px;">
+        <div>
+          <div class="board-label">我的棋盘</div>
+          <div class="mock-board">
+            ${Array(100).fill(0).map((_, i) => {
+              const shipCells = [11,12,13,14,15, 30,31,32,33, 50,51,52, 70,71,72, 80,81];
+              return `<div class="mock-cell${shipCells.includes(i) ? ' ship' : ''}"></div>`;
+            }).join('')}
+          </div>
+        </div>
+        <div style="flex:1;">
+          <div class="label" style="margin-bottom:8px;">待放置舰船</div>
+          <div class="ship-list">
+            <div class="ship-item"><div class="ship-blocks">${'<div class="ship-block sunk"></div>'.repeat(5)}</div><span style="text-decoration:line-through;">航空母舰 ×5</span></div>
+            <div class="ship-item"><div class="ship-blocks">${'<div class="ship-block sunk"></div>'.repeat(4)}</div><span style="text-decoration:line-through;">战列舰 ×4</span></div>
+            <div class="ship-item" style="background:#6366f111; padding:4px 6px; border-radius:4px;"><div class="ship-blocks">${'<div class="ship-block"></div>'.repeat(3)}</div><span style="color:white;">巡洋舰 ×3 ← 当前</span></div>
+            <div class="ship-item"><div class="ship-blocks">${'<div class="ship-block"></div>'.repeat(3)}</div><span>驱逐舰 ×3</span></div>
+            <div class="ship-item"><div class="ship-blocks">${'<div class="ship-block"></div>'.repeat(2)}</div><span>潜水艇 ×2</span></div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:16px;">
+            <button class="mock-button" style="background:#374151;color:#94a3b8;border:none;">🔀 随机布置</button>
+            <button class="mock-button" style="background:#6366f1;color:white;border:none;">✓ 确认布局</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 页面 3：对战阶段 -->
+<div class="page-section">
+  <div class="page-title">页面 3 — 对战阶段</div>
+  <div class="mockup">
+    <div class="mockup-header">🚢 对战中 — <span style="color:#16a34a;">你的回合</span></div>
+    <div class="mockup-body">
+      <div class="game-layout">
+        <div class="boards-wrap">
+          <div>
+            <div class="board-label">敌方海域（点击攻击）</div>
+            <div class="mock-board">
+              ${Array(100).fill(0).map((_, i) => {
+                const hits = [5,6,7, 23,33,43];
+                const misses = [10,20,45,67,82];
+                const sunk = [55,56,57,58];
+                if(sunk.includes(i)) return '<div class="mock-cell sunk"></div>';
+                if(hits.includes(i)) return '<div class="mock-cell hit"></div>';
+                if(misses.includes(i)) return '<div class="mock-cell miss"></div>';
+                return '<div class="mock-cell"></div>';
+              }).join('')}
+            </div>
+          </div>
+          <div>
+            <div class="board-label">我方海域</div>
+            <div class="mock-board">
+              ${Array(100).fill(0).map((_, i) => {
+                const ships = [11,12,13,14,15, 30,31,32,33, 50,51,52, 70,71,72, 80,81];
+                const enemyHits = [50,51];
+                if(enemyHits.includes(i)) return '<div class="mock-cell hit"></div>';
+                if(ships.includes(i)) return '<div class="mock-cell ship"></div>';
+                return '<div class="mock-cell"></div>';
+              }).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="game-sidebar">
+          <div class="label">状态</div>
+          <div style="margin-top:6px;"><span class="status-badge turn-mine">你的回合</span></div>
+          <div class="label" style="margin-top:16px;">敌方舰队</div>
+          <div class="ship-list">
+            <div class="ship-item"><div class="ship-blocks">${'<div class="ship-block sunk"></div>'.repeat(5)}</div></div>
+            <div class="ship-item"><div class="ship-blocks">${'<div class="ship-block sunk"></div>'.repeat(4)}</div></div>
+            <div class="ship-item"><div class="ship-blocks">${Array(3).fill(0).map((_,i)=>`<div class="ship-block${i<2?' sunk':''}"></div>`).join('')}</div></div>
+            <div class="ship-item"><div class="ship-blocks">${'<div class="ship-block"></div>'.repeat(3)}</div></div>
+            <div class="ship-item"><div class="ship-blocks">${'<div class="ship-block"></div>'.repeat(2)}</div></div>
+          </div>
+          <div class="label" style="margin-top:16px;">战况</div>
+          <div style="font-size:12px; color:#94a3b8; margin-top:6px; line-height:1.8;">
+            <div>💥 命中：6</div>
+            <div>🌊 未中：5</div>
+            <div>🚢 已击沉：2</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
