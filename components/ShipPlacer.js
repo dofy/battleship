@@ -23,6 +23,9 @@ function buildBoard(placements) {
       const r = dir === 'H' ? row : row + i
       const c = dir === 'H' ? col + i : col
       b[r][c].hasShip = true
+      b[r][c].isBow   = (i === 0)
+      b[r][c].isStern = (i === size - 1)
+      b[r][c].shipDir = dir
     }
   }
   return b

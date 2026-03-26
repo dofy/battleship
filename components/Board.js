@@ -2,8 +2,21 @@
 export default function Board({ board, onCellClick, interactive = false, label, lastAttack }) {
   const cols = ['A','B','C','D','E','F','G','H','I','J']
 
+  function shipShape(cell) {
+    if (!cell.hasShip) return 'rounded-sm'
+    if (!cell.isBow && !cell.isStern) return 'rounded-none'
+    if (cell.shipDir === 'H') {
+      if (cell.isBow)   return 'rounded-l-xl rounded-r-none'
+      if (cell.isStern) return 'rounded-r    rounded-l-none'
+    } else {
+      if (cell.isBow)   return 'rounded-t-xl rounded-b-none'
+      if (cell.isStern) return 'rounded-b    rounded-t-none'
+    }
+    return 'rounded-sm'
+  }
+
   function cellClass(cell) {
-    const base = 'w-8 h-8 border border-zinc-800 rounded-sm flex items-center justify-center text-sm font-bold transition-colors relative overflow-visible '
+    const base = `w-8 h-8 border border-zinc-800 ${shipShape(cell)} flex items-center justify-center text-sm font-bold transition-colors relative overflow-visible `
     if (cell.attacked && cell.hasShip)  return base + 'bg-red-800 text-red-200 cursor-default'
     if (cell.attacked && !cell.hasShip) return base + 'bg-zinc-800 text-zinc-600 cursor-default'
     if (cell.hasShip)                   return base + 'bg-teal-800 cursor-default'
