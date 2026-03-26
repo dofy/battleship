@@ -1,6 +1,6 @@
 // components/LobbyTable.js
 export default function LobbyTable({ rooms, onJoin }) {
-  if (!rooms.length) return <p className="text-gray-500 text-sm">暂无公开房间</p>
+  if (!rooms?.length) return <p className="text-gray-500 text-sm">暂无公开房间</p>
   return (
     <table className="w-full text-sm border-collapse">
       <thead>

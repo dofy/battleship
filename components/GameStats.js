@@ -7,13 +7,13 @@ const SHIPS = [
   { name: '潜水艇',   size: 2 },
 ]
 
-export default function GameStats({ roomState, myId }) {
+export default function GameStats({ roomState, myId, sunkShipNames = [] }) {
   if (!roomState) return null
   const isMyTurn = roomState.currentTurn === myId
   const me = roomState.players.find(p => p?.id === myId)
-  const opponent = roomState.players.find(p => p && p.id !== myId)
 
-  const mineHits = me?.attacks?.flat().filter(Boolean).length || 0
+  // 攻击次数（attacks 是 boolean[][]，true = 已攻击该格）
+  const myAttackCount = me?.attacks?.flat().filter(Boolean).length || 0
 
   return (
     <div className="space-y-4 w-36">
@@ -27,20 +27,26 @@ export default function GameStats({ roomState, myId }) {
       <div>
         <div className="text-xs text-indigo-400 uppercase font-bold mb-2">敌方舰队</div>
         <div className="space-y-1.5">
-          {SHIPS.map((s, i) => (
-            <div key={i} className="flex gap-0.5">
-              {Array.from({ length: s.size }, (_, k) => (
-                <div key={k} className="w-3.5 h-3.5 bg-indigo-600 rounded-sm" />
-              ))}
-            </div>
-          ))}
+          {SHIPS.map((s, i) => {
+            const isSunk = sunkShipNames.includes(s.name)
+            return (
+              <div key={i} className="flex items-center gap-1">
+                <div className="flex gap-0.5">
+                  {Array.from({ length: s.size }, (_, k) => (
+                    <div key={k} className={`w-3.5 h-3.5 rounded-sm ${isSunk ? 'bg-gray-600' : 'bg-indigo-600'}`} />
+                  ))}
+                </div>
+                {isSunk && <span className="text-xs text-gray-500 line-through">{s.name}</span>}
+              </div>
+            )
+          })}
         </div>
       </div>
 
       <div>
         <div className="text-xs text-indigo-400 uppercase font-bold mb-1">战况</div>
         <div className="text-xs text-gray-400 space-y-1">
-          <div>攻击：{mineHits}</div>
+          <div>攻击：{myAttackCount}</div>
         </div>
       </div>
     </div>
