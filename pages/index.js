@@ -2,7 +2,7 @@
 import Head from 'next/head'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
-import { io } from 'socket.io-client'
+import { getSocket } from '../lib/socket'
 import LobbyTable from '../components/LobbyTable'
 import { useLocalStats } from '../hooks/useLocalStats'
 
@@ -20,18 +20,27 @@ export default function Home() {
     const saved = localStorage.getItem('battleship_nickname')
     if (saved) setNickname(saved)
 
-    const socket = io()
+    const socket = getSocket()
     socketRef.current = socket
+
+    const onListResult = ({ rooms }) => setRooms(rooms)
+    const onCreated    = ({ roomId }) => router.push(`/room/${roomId}`)
+    const onJoined     = ({ roomState }) => router.push(`/room/${roomState.id}`)
+    const onError      = ({ message }) => setError(message)
+
+    socket.on('room:list_result', onListResult)
+    socket.on('room:created',     onCreated)
+    socket.on('room:joined',      onJoined)
+    socket.on('error',            onError)
+
     socket.emit('room:list')
-    socket.on('room:list_result', ({ rooms }) => setRooms(rooms))
-    socket.on('room:created', ({ roomId }) => {
-      router.push(`/room/${roomId}`)
-    })
-    socket.on('room:joined', ({ roomState }) => {
-      router.push(`/room/${roomState.id}`)
-    })
-    socket.on('error', ({ message }) => setError(message))
-    return () => socket.disconnect()
+
+    return () => {
+      socket.off('room:list_result', onListResult)
+      socket.off('room:created',     onCreated)
+      socket.off('room:joined',      onJoined)
+      socket.off('error',            onError)
+    }
   }, [])
 
   function saveName() {

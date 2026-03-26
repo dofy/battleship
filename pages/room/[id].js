@@ -2,7 +2,7 @@
 import Head from 'next/head'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/router'
-import { io } from 'socket.io-client'
+import { getSocket } from '../../lib/socket'
 import Board from '../../components/Board'
 import ShipPlacer from '../../components/ShipPlacer'
 import GameStats from '../../components/GameStats'
@@ -22,23 +22,21 @@ export default function RoomPage() {
 
   useEffect(() => {
     if (!roomId) return
-    const socket = io()
+
+    const socket = getSocket()
     socketRef.current = socket
 
-    socket.on('connect', () => {
+    const onConnect = () => {
       setMyId(socket.id)
       const nickname = localStorage.getItem('battleship_nickname') || '游客'
       socket.emit('room:join', { roomId, nickname })
-    })
+    }
 
-    socket.on('room:joined', ({ roomState }) => setRoomState(roomState))
-    socket.on('room:update',  ({ roomState }) => setRoomState(roomState))
+    const onRoomJoined = ({ roomState }) => setRoomState(roomState)
+    const onRoomUpdate = ({ roomState }) => setRoomState(roomState)
+    const onPlaceTimeout = () => setMessage('布局超时，已自动随机布置')
 
-    socket.on('place:timeout', () => {
-      setMessage('布局超时，已自动随机布置')
-    })
-
-    socket.on('game:result', ({ winner, hit, sunk, shipName }) => {
+    const onGameResult = ({ winner, hit, sunk, shipName }) => {
       const myNickname = localStorage.getItem('battleship_nickname') || ''
       if (winner) {
         const isWinner = winner === myNickname
@@ -52,22 +50,39 @@ export default function RoomPage() {
       } else {
         setMessage('未中')
       }
-    })
+    }
 
-    socket.on('game:rematch_vote', ({ votes, total }) => {
-      setRematchVotes({ votes, total })
-    })
+    const onRematchVote = ({ votes, total }) => setRematchVotes({ votes, total })
+    const onPlayerDisconnect = ({ nickname }) => setMessage(`${nickname} 断线了`)
+    const onError = ({ message }) => setMessage(`⚠️ ${message}`)
+    const onDisconnect = () => router.push('/')
 
-    socket.on('player:disconnect', ({ nickname }) => {
-      setMessage(`${nickname} 断线了`)
-    })
+    socket.on('connect',           onConnect)
+    socket.on('room:joined',       onRoomJoined)
+    socket.on('room:update',       onRoomUpdate)
+    socket.on('place:timeout',     onPlaceTimeout)
+    socket.on('game:result',       onGameResult)
+    socket.on('game:rematch_vote', onRematchVote)
+    socket.on('player:disconnect', onPlayerDisconnect)
+    socket.on('error',             onError)
+    socket.on('disconnect',        onDisconnect)
 
-    socket.on('error', ({ message }) => setMessage(`⚠️ ${message}`))
+    // 若 socket 已经连接（单例复用），直接触发加入逻辑
+    if (socket.connected) {
+      onConnect()
+    }
 
-    // 服务端断开连接 → 返回首页
-    socket.on('disconnect', () => router.push('/'))
-
-    return () => socket.disconnect()
+    return () => {
+      socket.off('connect',           onConnect)
+      socket.off('room:joined',       onRoomJoined)
+      socket.off('room:update',       onRoomUpdate)
+      socket.off('place:timeout',     onPlaceTimeout)
+      socket.off('game:result',       onGameResult)
+      socket.off('game:rematch_vote', onRematchVote)
+      socket.off('player:disconnect', onPlayerDisconnect)
+      socket.off('error',             onError)
+      socket.off('disconnect',        onDisconnect)
+    }
   }, [roomId])
 
   function handleAttack(row, col) {
@@ -88,7 +103,6 @@ export default function RoomPage() {
   }
 
   function handleRematch() {
-    // 再战时重置本地状态
     setSunkShipNames([])
     setRematchVotes({ votes: 0, total: 2 })
     setMessage('')
