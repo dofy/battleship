@@ -125,7 +125,7 @@ export default function Board({
                 <div
                   key={c}
                   className={pCell ? previewClass(pCell) : cellClass(cell, r, c)}
-                  onClick={() => interactive && !pCell && onCellClick && onCellClick(r, c)}
+                  onClick={() => interactive && onCellClick && onCellClick(r, c)}
                   onMouseEnter={() => onCellHover?.(r, c)}
                 >
                   {!pCell && cell.attacked && cell.hasShip  && <span>●</span>}
