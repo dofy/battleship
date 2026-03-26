@@ -49,6 +49,22 @@ test('toSnapshot hides opponent hasShip during playing', () => {
   expect(opponentBoard[0][0].hasShip).toBe(false)
 })
 
+test('toSnapshot reveals hasShip on attacked opponent cells during playing', () => {
+  const room = createRoom('SNAP03', 'p1', 'Alice', true)
+  addPlayer(room, 'p2', 'Bob')
+  room.status = 'playing'
+  // [0][0] 有船且已被攻击 → 应暴露
+  room.players[1].board[0][0].hasShip  = true
+  room.players[1].board[0][0].attacked = true
+  // [0][1] 有船但未被攻击 → 仍隐藏
+  room.players[1].board[0][1].hasShip  = true
+  room.players[1].board[0][1].attacked = false
+  const snap = toSnapshot(room, 'p1')
+  const opponentBoard = snap.players.find(p => p?.id === 'p2').board
+  expect(opponentBoard[0][0].hasShip).toBe(true)   // 已攻击 → 暴露
+  expect(opponentBoard[0][1].hasShip).toBe(false)  // 未攻击 → 隐藏
+})
+
 test('toSnapshot reveals opponent hasShip after finished', () => {
   const room = createRoom('SNAP02', 'p1', 'Alice', true)
   addPlayer(room, 'p2', 'Bob')
