@@ -29,9 +29,9 @@ function buildBoard(placements) {
 }
 
 export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
-  const [placements, setPlacements] = useState([])      // 手动记录，用于撤销
+  const [placements, setPlacements] = useState([])
   const [board, setBoard]           = useState(createEmptyBoard)
-  const [isRandom, setIsRandom]     = useState(false)   // 是否已随机布置
+  const [isRandom, setIsRandom]     = useState(false)
   const [direction, setDirection]   = useState('H')
   const [secondsLeft, setSeconds]   = useState(90)
   const [ready, setReady]           = useState(false)
@@ -72,11 +72,7 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
   }
 
   function handleUndo() {
-    if (isRandom) {
-      // 随机布置后整体清空
-      handleClear()
-      return
-    }
+    if (isRandom) { handleClear(); return }
     if (placements.length === 0) return
     const newPlacements = placements.slice(0, -1)
     setPlacements(newPlacements)
@@ -109,13 +105,13 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
     <div className="space-y-4">
       {/* 倒计时条 */}
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+        <div className="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all duration-500 ${secondsLeft > 30 ? 'bg-gradient-to-r from-indigo-500 to-cyan-400' : 'bg-gradient-to-r from-orange-500 to-red-500'}`}
+            className={`h-full rounded-full transition-all duration-500 ${secondsLeft > 30 ? 'bg-indigo-500' : 'bg-red-500'}`}
             style={{ width: `${pct}%` }}
           />
         </div>
-        <span className={`text-sm font-bold font-mono w-12 text-right ${secondsLeft <= 30 ? 'text-orange-400' : 'text-slate-300'}`}>
+        <span className={`text-sm font-bold font-mono w-12 text-right ${secondsLeft <= 30 ? 'text-red-400' : 'text-gray-300'}`}>
           {secondsLeft}s
         </span>
       </div>
@@ -131,7 +127,7 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
         <div className="space-y-3 w-44">
           {/* 当前待放置 */}
           {!ready && (
-            <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
+            <div className="p-3 bg-gray-800 border border-gray-700 rounded-lg">
               {currentShip ? (
                 <>
                   <div className="text-xs text-indigo-400 font-bold uppercase mb-1">当前放置</div>
@@ -143,7 +139,7 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
                   </div>
                   <button
                     onClick={() => setDirection(d => d === 'H' ? 'V' : 'H')}
-                    className="w-full py-1 text-xs text-slate-300 bg-slate-700 hover:bg-slate-600 rounded transition-colors"
+                    className="w-full py-1 text-xs text-gray-300 bg-gray-700 hover:bg-gray-600 rounded transition-colors"
                   >
                     方向: {direction === 'H' ? '➡ 水平' : '⬇ 垂直'}
                   </button>
@@ -158,13 +154,13 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
           <div className="space-y-1">
             {SHIPS.map((s, i) => (
               <div key={i} className={`flex items-center gap-2 text-xs px-2 py-1.5 rounded-md ${
-                i === shipIdx    ? 'bg-indigo-900/60 border border-indigo-600/60 text-white' :
-                i < shipIdx      ? 'text-slate-600 line-through' :
-                'text-slate-500'
+                i === shipIdx    ? 'bg-indigo-900 border border-indigo-600 text-white' :
+                i < shipIdx      ? 'text-gray-600 line-through' :
+                'text-gray-500'
               }`}>
                 <div className="flex gap-0.5">
                   {Array.from({ length: s.size }, (_, k) => (
-                    <div key={k} className={`w-2.5 h-2.5 rounded-sm ${i < shipIdx ? 'bg-slate-700' : 'bg-indigo-500'}`} />
+                    <div key={k} className={`w-2.5 h-2.5 rounded-sm ${i < shipIdx ? 'bg-gray-700' : 'bg-indigo-500'}`} />
                   ))}
                 </div>
                 {s.name}
@@ -177,7 +173,7 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
             <button
               onClick={handleRandom}
               disabled={ready}
-              className="w-full py-1.5 text-xs text-slate-300 bg-slate-700 hover:bg-slate-600 rounded transition-colors disabled:opacity-40"
+              className="w-full py-1.5 text-xs text-gray-300 bg-gray-700 hover:bg-gray-600 rounded transition-colors disabled:opacity-40"
             >
               🔀 随机布置
             </button>
@@ -185,7 +181,7 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
             {(placements.length > 0 || isRandom) && !ready && (
               <button
                 onClick={handleUndo}
-                className="w-full py-1.5 text-xs text-slate-300 bg-slate-700 hover:bg-slate-600 rounded transition-colors"
+                className="w-full py-1.5 text-xs text-gray-300 bg-gray-700 hover:bg-gray-600 rounded transition-colors"
               >
                 {isRandom ? '↺ 清空重置' : `↩ 撤销 (${placements.length})`}
               </button>
@@ -194,7 +190,7 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
             {placements.length > 1 && !isRandom && !ready && (
               <button
                 onClick={handleClear}
-                className="w-full py-1.5 text-xs text-red-400 bg-red-950/40 hover:bg-red-950/70 rounded transition-colors"
+                className="w-full py-1.5 text-xs text-red-400 bg-red-900 hover:bg-red-800 rounded transition-colors"
               >
                 ✕ 清空全部
               </button>

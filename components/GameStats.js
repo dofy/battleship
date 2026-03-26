@@ -18,14 +18,14 @@ export default function GameStats({ roomState, myId, sunkShipNames = [] }) {
       {/* 回合状态 */}
       <div className={`px-3 py-2 rounded-lg border text-center text-sm font-bold ${
         isMyTurn
-          ? 'bg-green-900/40 border-green-700/60 text-green-300'
-          : 'bg-slate-800/60 border-slate-700/50 text-slate-400'
+          ? 'bg-green-900 border-green-700 text-green-300'
+          : 'bg-gray-800 border-gray-700 text-gray-400'
       }`}>
         {isMyTurn ? '⚔ 你的回合' : '⏳ 对手回合'}
       </div>
 
       {/* 敌方舰队 */}
-      <div className="p-3 bg-slate-800/40 border border-slate-700/50 rounded-lg">
+      <div className="p-3 bg-gray-800 border border-gray-700 rounded-lg">
         <div className="text-xs text-indigo-400 uppercase font-bold mb-2 tracking-wide">敌方舰队</div>
         <div className="space-y-1.5">
           {SHIPS.map((s, i) => {
@@ -36,11 +36,11 @@ export default function GameStats({ roomState, myId, sunkShipNames = [] }) {
                   {Array.from({ length: s.size }, (_, k) => (
                     <div
                       key={k}
-                      className={`w-3 h-3 rounded-sm ${isSunk ? 'bg-red-900/60' : 'bg-indigo-600/80'}`}
+                      className={`w-3 h-3 rounded-sm ${isSunk ? 'bg-red-900' : 'bg-indigo-600'}`}
                     />
                   ))}
                 </div>
-                <span className={`text-xs ${isSunk ? 'text-slate-600 line-through' : 'text-slate-400'}`}>
+                <span className={`text-xs ${isSunk ? 'text-gray-600 line-through' : 'text-gray-400'}`}>
                   {s.name}
                 </span>
               </div>
@@ -50,12 +50,12 @@ export default function GameStats({ roomState, myId, sunkShipNames = [] }) {
       </div>
 
       {/* 战况 */}
-      <div className="p-3 bg-slate-800/40 border border-slate-700/50 rounded-lg">
+      <div className="p-3 bg-gray-800 border border-gray-700 rounded-lg">
         <div className="text-xs text-indigo-400 uppercase font-bold mb-2 tracking-wide">战况</div>
-        <div className="text-xs text-slate-400 space-y-1">
+        <div className="text-xs text-gray-400 space-y-1">
           <div className="flex justify-between">
             <span>攻击次数</span>
-            <span className="text-slate-200 font-mono">{myAttackCount}</span>
+            <span className="text-gray-200 font-mono">{myAttackCount}</span>
           </div>
           <div className="flex justify-between">
             <span>击沉数</span>

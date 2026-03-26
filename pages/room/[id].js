@@ -110,10 +110,10 @@ export default function RoomPage() {
 
   if (!roomState) {
     return (
-      <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
         <div className="text-center space-y-3">
           <div className="text-3xl">🚢</div>
-          <p className="text-slate-400">连接中...</p>
+          <p className="text-gray-400">连接中...</p>
         </div>
       </div>
     )
@@ -124,23 +124,23 @@ export default function RoomPage() {
   const status   = roomState.status
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white">
       <Head><title>🚢 Battleship! — 房间 {roomId}</title></Head>
 
       {/* 顶部导航 */}
-      <div className="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+      <div className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-xl">🚢</span>
-          <span className="font-bold text-slate-100">Battleship</span>
+          <span className="font-bold text-white">Battleship</span>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-sm text-slate-500">
+          <div className="text-sm text-gray-500">
             房间码
             <span className="ml-1.5 text-indigo-400 font-mono font-bold tracking-widest">{roomId}</span>
           </div>
           <button
             onClick={handleLeave}
-            className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 border border-slate-700 rounded transition-colors"
+            className="text-xs text-gray-500 hover:text-gray-300 px-2 py-1 border border-gray-700 rounded"
           >
             离开
           </button>
@@ -151,7 +151,7 @@ export default function RoomPage() {
 
         {/* 消息提示 */}
         {message && (
-          <div className="mb-6 px-4 py-3 bg-indigo-950/50 border border-indigo-800/50 rounded-lg text-sm text-indigo-200">
+          <div className="mb-6 px-4 py-3 bg-indigo-900 border border-indigo-700 rounded-lg text-sm text-indigo-200">
             {message}
           </div>
         )}
@@ -159,9 +159,9 @@ export default function RoomPage() {
         {/* 等待阶段 */}
         {status === 'waiting' && (
           <div className="flex flex-col items-center justify-center py-24 space-y-4">
-            <div className="text-5xl animate-pulse">⚓</div>
-            <p className="text-slate-300 text-lg font-medium">等待对手加入...</p>
-            <p className="text-slate-600 text-sm">
+            <div className="text-5xl">⚓</div>
+            <p className="text-gray-300 text-lg font-medium">等待对手加入...</p>
+            <p className="text-gray-600 text-sm">
               将房间码
               <span className="mx-1.5 text-indigo-400 font-mono font-bold tracking-widest">{roomId}</span>
               发给朋友
@@ -200,7 +200,7 @@ export default function RoomPage() {
           <div className="mt-8 flex gap-3 items-center">
             <button
               onClick={handleRematch}
-              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold transition-colors"
+              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold"
             >
               再战一局
               <span className="ml-1.5 text-indigo-300 text-sm font-normal">
@@ -209,7 +209,7 @@ export default function RoomPage() {
             </button>
             <button
               onClick={handleLeave}
-              className="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-300 transition-colors"
+              className="px-6 py-2.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-gray-300"
             >
               返回大厅
             </button>

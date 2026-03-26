@@ -66,14 +66,14 @@ export default function Home() {
     : 0
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-gray-900 text-white">
       <Head><title>🚢 Battleship!</title></Head>
 
       {/* 顶部标题栏 */}
-      <div className="border-b border-slate-800 px-8 py-5 flex items-center gap-3">
+      <div className="border-b border-gray-800 px-8 py-5 flex items-center gap-3">
         <span className="text-2xl">🚢</span>
-        <h1 className="text-xl font-bold text-slate-100">Battleship</h1>
-        <span className="text-slate-600 text-sm">海战棋 · 1v1 实时对战</span>
+        <h1 className="text-xl font-bold text-white">Battleship</h1>
+        <span className="text-gray-600 text-sm">海战棋 · 1v1 实时对战</span>
       </div>
 
       {/* 主内容居中 */}
@@ -90,18 +90,18 @@ export default function Home() {
               value={nickname}
               onChange={e => { setNickname(e.target.value); setError('') }}
               onKeyDown={e => e.key === 'Enter' && handleCreate()}
-              className="w-full bg-slate-800 border border-slate-700 focus:border-indigo-500 rounded-lg px-3 py-2 text-sm outline-none transition-colors"
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm outline-none"
               placeholder="输入昵称..."
             />
           </div>
 
           {/* 公开选项 */}
-          <label className="flex items-center gap-2 text-sm text-slate-400 cursor-pointer select-none">
+          <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={isPublic}
               onChange={e => setIsPublic(e.target.checked)}
-              className="rounded accent-indigo-500"
+              className="rounded"
             />
             公开（显示在大厅）
           </label>
@@ -109,21 +109,21 @@ export default function Home() {
           {/* 创建按钮 */}
           <button
             onClick={handleCreate}
-            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold text-sm transition-colors"
+            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold text-sm"
           >
             + 创建新房间
           </button>
 
           {/* 分隔 */}
           <div className="flex items-center gap-2">
-            <div className="flex-1 h-px bg-slate-800" />
-            <span className="text-xs text-slate-600">或</span>
-            <div className="flex-1 h-px bg-slate-800" />
+            <div className="flex-1 h-px bg-gray-800" />
+            <span className="text-xs text-gray-600">或</span>
+            <div className="flex-1 h-px bg-gray-800" />
           </div>
 
           {/* 加入房间 */}
           <div>
-            <label className="text-xs text-slate-500 block mb-1.5">通过房间码加入</label>
+            <label className="text-xs text-gray-500 block mb-1.5">通过房间码加入</label>
             <div className="flex gap-2">
               <input
                 value={roomCode}
@@ -131,11 +131,11 @@ export default function Home() {
                 onKeyDown={e => e.key === 'Enter' && handleJoin()}
                 placeholder="XXXXXX"
                 maxLength={6}
-                className="flex-1 bg-slate-800 border border-slate-700 focus:border-indigo-500 rounded-lg px-3 py-2 text-sm font-mono outline-none transition-colors min-w-0"
+                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm font-mono outline-none min-w-0"
               />
               <button
                 onClick={() => handleJoin()}
-                className="px-3 py-2 border border-indigo-600 text-indigo-400 hover:bg-indigo-900/40 rounded-lg text-sm transition-colors whitespace-nowrap"
+                className="px-3 py-2 border border-indigo-600 text-indigo-400 hover:bg-indigo-900 rounded-lg text-sm whitespace-nowrap"
               >
                 加入
               </button>
@@ -143,25 +143,25 @@ export default function Home() {
           </div>
 
           {error && (
-            <p className="text-red-400 text-xs bg-red-950/30 border border-red-900/40 rounded px-2 py-1">
+            <p className="text-red-400 text-xs bg-red-900 border border-red-800 rounded px-2 py-1">
               ⚠ {error}
             </p>
           )}
 
           {/* 战绩 */}
-          <div className="p-3 bg-slate-800/50 border border-slate-700/50 rounded-lg">
+          <div className="p-3 bg-gray-800 border border-gray-700 rounded-lg">
             <div className="text-xs text-indigo-400 uppercase font-bold mb-2 tracking-wide">本地战绩</div>
             <div className="space-y-1">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">🏆 胜场</span>
-                <span className="text-slate-200 font-mono">{stats.wins}</span>
+                <span className="text-gray-400">🏆 胜场</span>
+                <span className="text-gray-200 font-mono">{stats.wins}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-slate-400">💀 败场</span>
-                <span className="text-slate-200 font-mono">{stats.losses}</span>
+                <span className="text-gray-400">💀 败场</span>
+                <span className="text-gray-200 font-mono">{stats.losses}</span>
               </div>
-              <div className="flex justify-between text-sm pt-1 border-t border-slate-700/50">
-                <span className="text-slate-500">胜率</span>
+              <div className="flex justify-between text-sm pt-1 border-t border-gray-700">
+                <span className="text-gray-500">胜率</span>
                 <span className="text-indigo-400 font-mono font-bold">{winRate}%</span>
               </div>
             </div>
@@ -174,7 +174,7 @@ export default function Home() {
             <div className="text-xs text-indigo-400 uppercase font-bold tracking-wide">公开房间大厅</div>
             <button
               onClick={() => socketRef.current?.emit('room:list')}
-              className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+              className="text-xs text-gray-500 hover:text-gray-300"
             >
               ↺ 刷新
             </button>
