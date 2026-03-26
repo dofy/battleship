@@ -326,17 +326,19 @@ export default function RoomPage() {
 
         {/* Placement phase */}
         {status === 'placing' && me && (
-          <ShipPlacer
-            placingDeadline={roomState.placingDeadline}
-            onSubmit={handleSubmitBoard}
-            onRandom={handleRandomBoard}
-          />
+          <div className="flex justify-center">
+            <ShipPlacer
+              placingDeadline={roomState.placingDeadline}
+              onSubmit={handleSubmitBoard}
+              onRandom={handleRandomBoard}
+            />
+          </div>
         )}
 
         {/* Battle phase */}
         {(status === 'playing' || status === 'finished') && me && opponent && (
           <div className="space-y-4">
-            <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-center lg:items-start">
+            <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-center lg:items-start justify-center">
               <Board
                 board={opponent.board}
                 onCellClick={status === 'playing' ? handleAttack : undefined}
