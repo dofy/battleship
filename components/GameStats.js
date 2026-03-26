@@ -11,42 +11,56 @@ export default function GameStats({ roomState, myId, sunkShipNames = [] }) {
   if (!roomState) return null
   const isMyTurn = roomState.currentTurn === myId
   const me = roomState.players.find(p => p?.id === myId)
-
-  // 攻击次数（attacks 是 boolean[][]，true = 已攻击该格）
   const myAttackCount = me?.attacks?.flat().filter(Boolean).length || 0
 
   return (
-    <div className="space-y-4 w-36">
-      <div>
-        <div className="text-xs text-indigo-400 uppercase font-bold mb-1">回合</div>
-        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${isMyTurn ? 'bg-green-900 text-green-300 border border-green-600' : 'bg-red-950 text-red-400 border border-red-800'}`}>
-          {isMyTurn ? '你的回合' : '对手回合'}
-        </span>
+    <div className="space-y-4 w-40">
+      {/* 回合状态 */}
+      <div className={`px-3 py-2 rounded-lg border text-center text-sm font-bold ${
+        isMyTurn
+          ? 'bg-green-900/40 border-green-700/60 text-green-300'
+          : 'bg-slate-800/60 border-slate-700/50 text-slate-400'
+      }`}>
+        {isMyTurn ? '⚔ 你的回合' : '⏳ 对手回合'}
       </div>
 
-      <div>
-        <div className="text-xs text-indigo-400 uppercase font-bold mb-2">敌方舰队</div>
+      {/* 敌方舰队 */}
+      <div className="p-3 bg-slate-800/40 border border-slate-700/50 rounded-lg">
+        <div className="text-xs text-indigo-400 uppercase font-bold mb-2 tracking-wide">敌方舰队</div>
         <div className="space-y-1.5">
           {SHIPS.map((s, i) => {
             const isSunk = sunkShipNames.includes(s.name)
             return (
-              <div key={i} className="flex items-center gap-1">
+              <div key={i} className="flex items-center gap-1.5">
                 <div className="flex gap-0.5">
                   {Array.from({ length: s.size }, (_, k) => (
-                    <div key={k} className={`w-3.5 h-3.5 rounded-sm ${isSunk ? 'bg-gray-600' : 'bg-indigo-600'}`} />
+                    <div
+                      key={k}
+                      className={`w-3 h-3 rounded-sm ${isSunk ? 'bg-red-900/60' : 'bg-indigo-600/80'}`}
+                    />
                   ))}
                 </div>
-                {isSunk && <span className="text-xs text-gray-500 line-through">{s.name}</span>}
+                <span className={`text-xs ${isSunk ? 'text-slate-600 line-through' : 'text-slate-400'}`}>
+                  {s.name}
+                </span>
               </div>
             )
           })}
         </div>
       </div>
 
-      <div>
-        <div className="text-xs text-indigo-400 uppercase font-bold mb-1">战况</div>
-        <div className="text-xs text-gray-400 space-y-1">
-          <div>攻击：{myAttackCount}</div>
+      {/* 战况 */}
+      <div className="p-3 bg-slate-800/40 border border-slate-700/50 rounded-lg">
+        <div className="text-xs text-indigo-400 uppercase font-bold mb-2 tracking-wide">战况</div>
+        <div className="text-xs text-slate-400 space-y-1">
+          <div className="flex justify-between">
+            <span>攻击次数</span>
+            <span className="text-slate-200 font-mono">{myAttackCount}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>击沉数</span>
+            <span className="text-red-400 font-mono">{sunkShipNames.length}</span>
+          </div>
         </div>
       </div>
     </div>

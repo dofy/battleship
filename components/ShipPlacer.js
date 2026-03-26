@@ -16,14 +16,28 @@ function createEmptyBoard() {
   )
 }
 
-export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
-  const [board, setBoard]         = useState(createEmptyBoard)
-  const [shipIdx, setShipIdx]     = useState(0)
-  const [direction, setDirection] = useState('H')
-  const [secondsLeft, setSeconds] = useState(90)
-  const [ready, setReady]         = useState(false)
+function buildBoard(placements) {
+  const b = createEmptyBoard()
+  for (const { row, col, size, dir } of placements) {
+    for (let i = 0; i < size; i++) {
+      const r = dir === 'H' ? row : row + i
+      const c = dir === 'H' ? col + i : col
+      b[r][c].hasShip = true
+    }
+  }
+  return b
+}
 
-  // 倒计时
+export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
+  const [placements, setPlacements] = useState([])      // 手动记录，用于撤销
+  const [board, setBoard]           = useState(createEmptyBoard)
+  const [isRandom, setIsRandom]     = useState(false)   // 是否已随机布置
+  const [direction, setDirection]   = useState('H')
+  const [secondsLeft, setSeconds]   = useState(90)
+  const [ready, setReady]           = useState(false)
+
+  const shipIdx = isRandom ? SHIPS.length : placements.length
+
   useEffect(() => {
     if (!placingDeadline) return
     const tick = () => {
@@ -52,20 +66,34 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
     if (ready || shipIdx >= SHIPS.length) return
     const { size } = SHIPS[shipIdx]
     if (!canPlace(board, row, col, size, direction)) return
-    const next = board.map(r => r.map(c => ({ ...c })))
-    for (let i = 0; i < size; i++) {
-      const r = direction === 'H' ? row : row + i
-      const c = direction === 'H' ? col + i : col
-      next[r][c].hasShip = true
+    const newPlacements = [...placements, { row, col, size, dir: direction }]
+    setPlacements(newPlacements)
+    setBoard(buildBoard(newPlacements))
+  }
+
+  function handleUndo() {
+    if (isRandom) {
+      // 随机布置后整体清空
+      handleClear()
+      return
     }
-    setBoard(next)
-    setShipIdx(idx => idx + 1)
+    if (placements.length === 0) return
+    const newPlacements = placements.slice(0, -1)
+    setPlacements(newPlacements)
+    setBoard(buildBoard(newPlacements))
+  }
+
+  function handleClear() {
+    setPlacements([])
+    setBoard(createEmptyBoard())
+    setIsRandom(false)
   }
 
   function handleRandom() {
     const randomBoard = onRandom()
     setBoard(randomBoard)
-    setShipIdx(SHIPS.length)
+    setPlacements([])
+    setIsRandom(true)
   }
 
   function handleSubmit() {
@@ -74,49 +102,117 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }) {
   }
 
   const pct = placingDeadline ? Math.max(0, (secondsLeft / 90) * 100) : 100
+  const allPlaced = shipIdx >= SHIPS.length
+  const currentShip = !allPlaced ? SHIPS[shipIdx] : null
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-gray-400">点击棋盘放置舰船</span>
-        <span className="text-xl font-bold text-yellow-400">⏱ {secondsLeft}s</span>
-      </div>
-      <div className="h-1.5 bg-blue-950 rounded overflow-hidden">
-        <div className="h-full bg-gradient-to-r from-indigo-500 to-cyan-400 transition-all"
-             style={{ width: `${pct}%` }} />
+      {/* 倒计时条 */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-500 ${secondsLeft > 30 ? 'bg-gradient-to-r from-indigo-500 to-cyan-400' : 'bg-gradient-to-r from-orange-500 to-red-500'}`}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <span className={`text-sm font-bold font-mono w-12 text-right ${secondsLeft <= 30 ? 'text-orange-400' : 'text-slate-300'}`}>
+          {secondsLeft}s
+        </span>
       </div>
 
-      <div className="flex gap-6">
-        <Board board={board} onCellClick={handleCellClick} interactive={!ready && shipIdx < SHIPS.length} label="我的棋盘" />
+      <div className="flex gap-6 items-start">
+        <Board
+          board={board}
+          onCellClick={handleCellClick}
+          interactive={!ready && !allPlaced}
+          label="点击棋盘放置舰船"
+        />
 
-        <div className="space-y-3 min-w-40">
-          <div className="text-xs text-indigo-400 font-bold uppercase">舰船列表</div>
-          {SHIPS.map((s, i) => (
-            <div key={i} className={`flex items-center gap-2 text-sm rounded px-2 py-1 ${i === shipIdx ? 'bg-indigo-900 border border-indigo-500 text-white' : i < shipIdx ? 'text-gray-600 line-through' : 'text-gray-400'}`}>
-              <div className="flex gap-0.5">
-                {Array.from({ length: s.size }, (_, k) => (
-                  <div key={k} className={`w-3 h-3 rounded-sm ${i < shipIdx ? 'bg-gray-600' : 'bg-indigo-500'}`} />
-                ))}
-              </div>
-              {s.name}
+        <div className="space-y-3 w-44">
+          {/* 当前待放置 */}
+          {!ready && (
+            <div className="p-3 bg-slate-800/60 border border-slate-700/50 rounded-lg">
+              {currentShip ? (
+                <>
+                  <div className="text-xs text-indigo-400 font-bold uppercase mb-1">当前放置</div>
+                  <div className="text-white font-medium text-sm mb-2">{currentShip.name}</div>
+                  <div className="flex gap-0.5 mb-2">
+                    {Array.from({ length: currentShip.size }, (_, k) => (
+                      <div key={k} className="w-4 h-4 bg-indigo-500 rounded-sm" />
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setDirection(d => d === 'H' ? 'V' : 'H')}
+                    className="w-full py-1 text-xs text-slate-300 bg-slate-700 hover:bg-slate-600 rounded transition-colors"
+                  >
+                    方向: {direction === 'H' ? '➡ 水平' : '⬇ 垂直'}
+                  </button>
+                </>
+              ) : (
+                <p className="text-green-400 text-sm font-medium">✓ 所有舰船已放置</p>
+              )}
             </div>
-          ))}
-
-          <button onClick={() => setDirection(d => d === 'H' ? 'V' : 'H')}
-                  className="w-full py-1 text-sm text-gray-400 bg-gray-800 rounded">
-            方向: {direction === 'H' ? '水平' : '垂直'}
-          </button>
-          <button onClick={handleRandom}
-                  className="w-full py-1 text-sm text-gray-400 bg-gray-800 rounded">
-            🔀 随机布置
-          </button>
-          {shipIdx >= SHIPS.length && !ready && (
-            <button onClick={handleSubmit}
-                    className="w-full py-2 text-sm text-white bg-indigo-600 rounded font-bold">
-              ✓ 确认布局
-            </button>
           )}
-          {ready && <p className="text-green-400 text-sm">✓ 等待对手...</p>}
+
+          {/* 舰船列表 */}
+          <div className="space-y-1">
+            {SHIPS.map((s, i) => (
+              <div key={i} className={`flex items-center gap-2 text-xs px-2 py-1.5 rounded-md ${
+                i === shipIdx    ? 'bg-indigo-900/60 border border-indigo-600/60 text-white' :
+                i < shipIdx      ? 'text-slate-600 line-through' :
+                'text-slate-500'
+              }`}>
+                <div className="flex gap-0.5">
+                  {Array.from({ length: s.size }, (_, k) => (
+                    <div key={k} className={`w-2.5 h-2.5 rounded-sm ${i < shipIdx ? 'bg-slate-700' : 'bg-indigo-500'}`} />
+                  ))}
+                </div>
+                {s.name}
+              </div>
+            ))}
+          </div>
+
+          {/* 操作按钮 */}
+          <div className="space-y-2">
+            <button
+              onClick={handleRandom}
+              disabled={ready}
+              className="w-full py-1.5 text-xs text-slate-300 bg-slate-700 hover:bg-slate-600 rounded transition-colors disabled:opacity-40"
+            >
+              🔀 随机布置
+            </button>
+
+            {(placements.length > 0 || isRandom) && !ready && (
+              <button
+                onClick={handleUndo}
+                className="w-full py-1.5 text-xs text-slate-300 bg-slate-700 hover:bg-slate-600 rounded transition-colors"
+              >
+                {isRandom ? '↺ 清空重置' : `↩ 撤销 (${placements.length})`}
+              </button>
+            )}
+
+            {placements.length > 1 && !isRandom && !ready && (
+              <button
+                onClick={handleClear}
+                className="w-full py-1.5 text-xs text-red-400 bg-red-950/40 hover:bg-red-950/70 rounded transition-colors"
+              >
+                ✕ 清空全部
+              </button>
+            )}
+
+            {allPlaced && !ready && (
+              <button
+                onClick={handleSubmit}
+                className="w-full py-2 text-sm text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold transition-colors"
+              >
+                ✓ 确认布局
+              </button>
+            )}
+
+            {ready && (
+              <p className="text-center text-green-400 text-sm py-1">✓ 等待对手...</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

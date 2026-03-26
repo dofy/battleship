@@ -44,7 +44,7 @@ export default function RoomPage() {
         if (isWinner) recordWin(); else recordLoss()
       } else if (sunk && shipName) {
         setSunkShipNames(prev => [...prev, shipName])
-        setMessage(`击沉了 ${shipName}！`)
+        setMessage(`击沉了对方 ${shipName}！`)
       } else if (hit) {
         setMessage('命中！')
       } else {
@@ -53,7 +53,7 @@ export default function RoomPage() {
     }
 
     const onRematchVote = ({ votes, total }) => setRematchVotes({ votes, total })
-    const onPlayerDisconnect = ({ nickname }) => setMessage(`${nickname} 断线了`)
+    const onPlayerDisconnect = ({ nickname }) => setMessage(`${nickname} 断线了，你获胜！`)
     const onError = ({ message }) => setMessage(`⚠️ ${message}`)
     const onDisconnect = () => router.push('/')
 
@@ -67,7 +67,6 @@ export default function RoomPage() {
     socket.on('error',             onError)
     socket.on('disconnect',        onDisconnect)
 
-    // 若 socket 已经连接（单例复用），直接触发加入逻辑
     if (socket.connected) {
       onConnect()
     }
@@ -111,8 +110,11 @@ export default function RoomPage() {
 
   if (!roomState) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
-        <p className="text-gray-400">连接中...</p>
+      <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <div className="text-3xl">🚢</div>
+          <p className="text-slate-400">连接中...</p>
+        </div>
       </div>
     )
   }
@@ -122,69 +124,98 @@ export default function RoomPage() {
   const status   = roomState.status
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
+    <div className="min-h-screen bg-slate-900 text-white">
       <Head><title>🚢 Battleship! — 房间 {roomId}</title></Head>
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">🚢 Battleship!</h1>
+      {/* 顶部导航 */}
+      <div className="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-xl">🚢</span>
+          <span className="font-bold text-slate-100">Battleship</span>
+        </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-400">房间码：<span className="text-indigo-400 font-mono font-bold">{roomId}</span></span>
-          <button onClick={handleLeave} className="text-xs text-gray-500 hover:text-gray-300">离开</button>
+          <div className="text-sm text-slate-500">
+            房间码
+            <span className="ml-1.5 text-indigo-400 font-mono font-bold tracking-widest">{roomId}</span>
+          </div>
+          <button
+            onClick={handleLeave}
+            className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 border border-slate-700 rounded transition-colors"
+          >
+            离开
+          </button>
         </div>
       </div>
 
-      {/* 消息提示 */}
-      {message && (
-        <div className="mb-4 px-4 py-2 bg-gray-800 rounded text-sm text-yellow-300">{message}</div>
-      )}
+      <div className="max-w-5xl mx-auto px-6 py-8">
 
-      {/* 等待阶段 */}
-      {status === 'waiting' && (
-        <div className="text-center py-20">
-          <p className="text-gray-400 text-lg">等待对手加入...</p>
-          <p className="text-sm text-gray-600 mt-2">把房间码 <span className="text-indigo-400 font-mono font-bold">{roomId}</span> 发给朋友</p>
-        </div>
-      )}
+        {/* 消息提示 */}
+        {message && (
+          <div className="mb-6 px-4 py-3 bg-indigo-950/50 border border-indigo-800/50 rounded-lg text-sm text-indigo-200">
+            {message}
+          </div>
+        )}
 
-      {/* 布局阶段 */}
-      {status === 'placing' && me && (
-        <ShipPlacer
-          placingDeadline={roomState.placingDeadline}
-          onSubmit={handleSubmitBoard}
-          onRandom={handleRandomBoard}
-        />
-      )}
+        {/* 等待阶段 */}
+        {status === 'waiting' && (
+          <div className="flex flex-col items-center justify-center py-24 space-y-4">
+            <div className="text-5xl animate-pulse">⚓</div>
+            <p className="text-slate-300 text-lg font-medium">等待对手加入...</p>
+            <p className="text-slate-600 text-sm">
+              将房间码
+              <span className="mx-1.5 text-indigo-400 font-mono font-bold tracking-widest">{roomId}</span>
+              发给朋友
+            </p>
+          </div>
+        )}
 
-      {/* 对战阶段 */}
-      {(status === 'playing' || status === 'finished') && me && opponent && (
-        <div className="flex gap-8">
-          <Board
-            board={opponent.board}
-            onCellClick={status === 'playing' ? handleAttack : undefined}
-            interactive={status === 'playing' && roomState.currentTurn === myId}
-            label="敌方海域（点击攻击）"
+        {/* 布局阶段 */}
+        {status === 'placing' && me && (
+          <ShipPlacer
+            placingDeadline={roomState.placingDeadline}
+            onSubmit={handleSubmitBoard}
+            onRandom={handleRandomBoard}
           />
-          <Board
-            board={me.board}
-            label="我方海域"
-          />
-          <GameStats roomState={roomState} myId={myId} sunkShipNames={sunkShipNames} />
-        </div>
-      )}
+        )}
 
-      {/* 游戏结束 */}
-      {status === 'finished' && (
-        <div className="mt-6 flex gap-4 items-center">
-          <button onClick={handleRematch}
-                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 rounded font-bold">
-            再战一局 ({rematchVotes.votes}/{rematchVotes.total})
-          </button>
-          <button onClick={handleLeave}
-                  className="px-6 py-2 bg-gray-700 hover:bg-gray-600 rounded">
-            返回大厅
-          </button>
-        </div>
-      )}
+        {/* 对战阶段 */}
+        {(status === 'playing' || status === 'finished') && me && opponent && (
+          <div className="flex gap-8 items-start">
+            <Board
+              board={opponent.board}
+              onCellClick={status === 'playing' ? handleAttack : undefined}
+              interactive={status === 'playing' && roomState.currentTurn === myId}
+              label={`敌方：${opponent.nickname}`}
+            />
+            <Board
+              board={me.board}
+              label={`我方：${me.nickname}`}
+            />
+            <GameStats roomState={roomState} myId={myId} sunkShipNames={sunkShipNames} />
+          </div>
+        )}
+
+        {/* 游戏结束 */}
+        {status === 'finished' && (
+          <div className="mt-8 flex gap-3 items-center">
+            <button
+              onClick={handleRematch}
+              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold transition-colors"
+            >
+              再战一局
+              <span className="ml-1.5 text-indigo-300 text-sm font-normal">
+                ({rematchVotes.votes}/{rematchVotes.total})
+              </span>
+            </button>
+            <button
+              onClick={handleLeave}
+              className="px-6 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-slate-300 transition-colors"
+            >
+              返回大厅
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
