@@ -70,17 +70,17 @@ export default function Home() {
       <Head><title>⚓ Battleship</title></Head>
 
       {/* Header */}
-      <div className="border-b border-zinc-800 px-8 py-5 flex items-center gap-3">
+      <div className="border-b border-zinc-800 px-6 py-4 flex items-center gap-3">
         <span className="text-2xl">⚓</span>
         <h1 className="text-xl font-bold text-zinc-100 tracking-widest">BATTLESHIP</h1>
-        <span className="text-zinc-600 text-sm">Naval Combat · 1v1 Live</span>
+        <span className="text-zinc-600 text-sm hidden sm:inline">Naval Combat · 1v1 Live</span>
       </div>
 
       {/* Main content */}
-      <div className="max-w-3xl mx-auto px-6 py-10 flex gap-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col sm:flex-row gap-6 sm:gap-8">
 
-        {/* Left: controls */}
-        <div className="w-56 space-y-4 flex-shrink-0">
+        {/* Controls */}
+        <div className="w-full sm:w-56 space-y-4 sm:flex-shrink-0">
           {/* Callsign */}
           <div>
             <label className="text-sm text-sky-400 uppercase font-bold block mb-1.5 tracking-widest">
@@ -168,7 +168,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right: lobby */}
+        {/* Lobby */}
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-center mb-3">
             <div className="text-sm text-sky-400 uppercase font-bold tracking-widest">Open Battles</div>
