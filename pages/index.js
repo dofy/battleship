@@ -35,11 +35,17 @@ export default function Home() {
 
     socket.emit('room:list')
 
+    // 每5秒自动刷新房间列表
+    const refreshInterval = setInterval(() => {
+      socket.emit('room:list')
+    }, 5000)
+
     return () => {
       socket.off('room:list_result', onListResult)
       socket.off('room:created',     onCreated)
       socket.off('room:joined',      onJoined)
       socket.off('error',            onError)
+      clearInterval(refreshInterval)
     }
   }, [])
 

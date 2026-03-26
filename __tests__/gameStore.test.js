@@ -1,4 +1,4 @@
-const { createRoom, getRoom, addPlayer, removeRoom, getPublicWaitingRooms, toSnapshot, getAllRooms } = require('../lib/gameStore')
+const { createRoom, getRoom, addPlayer, removeRoom, getPublicWaitingRooms, toSnapshot, getAllRooms, getRoomBySocket, resetForRematch } = require('../lib/gameStore')
 
 test('createRoom creates room with waiting status', () => {
   const room = createRoom('ABC123', 'player1', 'Alice', true)
@@ -79,4 +79,57 @@ test('getAllRooms returns all rooms', () => {
   createRoom('ALL001', 'p1', 'Alice', true)
   const all = getAllRooms()
   expect(all.some(r => r.id === 'ALL001')).toBe(true)
+})
+
+// ── 新增：socketId→room 映射表 ───────────────────────────
+test('getRoomBySocket returns room after createRoom', () => {
+  createRoom('MAP001', 'sock1', 'Alice', true)
+  const room = getRoomBySocket('sock1')
+  expect(room).toBeDefined()
+  expect(room.id).toBe('MAP001')
+})
+
+test('getRoomBySocket returns room after addPlayer', () => {
+  const room = createRoom('MAP002', 'sock2', 'Alice', true)
+  addPlayer(room, 'sock3', 'Bob')
+  expect(getRoomBySocket('sock3')?.id).toBe('MAP002')
+})
+
+test('getRoomBySocket returns null/undefined after removeRoom', () => {
+  createRoom('MAP003', 'sock4', 'Alice', true)
+  removeRoom('MAP003')
+  expect(getRoomBySocket('sock4')).toBeFalsy()
+})
+
+// ── 新增：winner 存 socketId ────────────────────────────
+test('toSnapshot winner is nickname, winnerId is socketId', () => {
+  const room = createRoom('WIN001', 'p1', 'Alice', true)
+  addPlayer(room, 'p2', 'Bob')
+  room.status = 'finished'
+  room.winner = 'p1'   // socketId
+  const snap = toSnapshot(room, 'p1')
+  expect(snap.winner).toBe('Alice')    // nickname 用于显示
+  expect(snap.winnerId).toBe('p1')     // socketId 用于判断
+})
+
+test('toSnapshot winner null when no winner', () => {
+  const room = createRoom('WIN002', 'p1', 'Alice', true)
+  addPlayer(room, 'p2', 'Bob')
+  const snap = toSnapshot(room, 'p1')
+  expect(snap.winner).toBeNull()
+  expect(snap.winnerId).toBeNull()
+})
+
+// ── 新增：resetForRematch 清理 turnTimer ────────────────
+test('resetForRematch clears turnTimer and resets state', () => {
+  const room = createRoom('REM001', 'p1', 'Alice', true)
+  addPlayer(room, 'p2', 'Bob')
+  room.status = 'finished'
+  room.winner = 'p1'
+  room.turnTimer = setTimeout(() => {}, 99999)
+  resetForRematch(room)
+  expect(room.status).toBe('placing')
+  expect(room.winner).toBeNull()
+  expect(room.turnTimer).toBeNull()
+  expect(room.players.every(p => !p.placingReady)).toBe(true)
 })

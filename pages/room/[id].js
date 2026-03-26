@@ -84,8 +84,7 @@ export default function RoomPage() {
 
     const onPlaceTimeout = () => setMessage('⏰ Placement timeout — fleet deployed randomly')
 
-    const onGameResult = ({ winner, hit, sunk, shipName, sunkCells }) => {
-      const myNickname   = localStorage.getItem('battleship_nickname') || ''
+    const onGameResult = ({ winner, winnerId, hit, sunk, shipName, sunkCells }) => {
       const wasAttacker  = pendingAttackRef.current !== null
       const isHit        = !!(winner || hit || sunk)
       const coord        = pendingAttackRef.current ? coordLabel(pendingAttackRef.current.row, pendingAttackRef.current.col) : ''
@@ -106,7 +105,8 @@ export default function RoomPage() {
       }
 
       if (winner) {
-        const isWinner = winner === myNickname
+        // 用 socketId 判断胜负，避免同名玩家误判
+        const isWinner = winnerId ? winnerId === myIdRef.current : winner === (localStorage.getItem('battleship_nickname') || '')
         setGameResult(isWinner ? 'win' : 'lose')
         if (isWinner) {
           setMessage(`🏆 ${coord} — Final blow! All enemy ships sunk. Victory!`)
