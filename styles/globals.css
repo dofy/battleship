@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@theme {
+  --font-family-sans: "Share Tech Mono", ui-monospace, monospace;
+  --font-family-mono: "Share Tech Mono", ui-monospace, monospace;
+}
