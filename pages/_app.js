@@ -12,6 +12,7 @@ function MyApp({ Component, pageProps }) {
           rel="stylesheet"
         />
         <style>{`html { font-size: 17px; }`}</style>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
       </Head>
       <Component {...pageProps} />
     </>
