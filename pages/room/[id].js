@@ -6,6 +6,7 @@ import { getSocket } from '../../lib/socket'
 import Board from '../../components/Board'
 import ShipPlacer from '../../components/ShipPlacer'
 import GameStats from '../../components/GameStats'
+import GameOverOverlay from '../../components/GameOverOverlay'
 import { useLocalStats } from '../../hooks/useLocalStats'
 import { randomPlaceShips, createEmptyBoard } from '../../lib/shipUtils'
 
@@ -17,6 +18,7 @@ export default function RoomPage() {
   const [message, setMessage]     = useState('')
   const [sunkShipNames, setSunkShipNames]   = useState([])
   const [rematchVotes, setRematchVotes]     = useState({ votes: 0, total: 2 })
+  const [gameResult, setGameResult]         = useState(null)   // 'win' | 'lose' | null
   const socketRef = useRef(null)
   const { recordWin, recordLoss } = useLocalStats()
 
@@ -41,6 +43,7 @@ export default function RoomPage() {
       if (winner) {
         const isWinner = winner === myNickname
         setMessage(isWinner ? '🏆 你赢了！' : '💀 你输了...')
+        setGameResult(isWinner ? 'win' : 'lose')
         if (isWinner) recordWin(); else recordLoss()
       } else if (sunk && shipName) {
         setSunkShipNames(prev => [...prev, shipName])
@@ -105,6 +108,7 @@ export default function RoomPage() {
     setSunkShipNames([])
     setRematchVotes({ votes: 0, total: 2 })
     setMessage('')
+    setGameResult(null)
     socketRef.current?.emit('game:rematch')
   }
 
@@ -126,6 +130,10 @@ export default function RoomPage() {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       <Head><title>🚢 Battleship! — 房间 {roomId}</title></Head>
+
+      {gameResult && (
+        <GameOverOverlay result={gameResult} onDismiss={() => setGameResult(null)} />
+      )}
 
       {/* 顶部导航 */}
       <div className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
