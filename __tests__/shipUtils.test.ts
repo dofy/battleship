@@ -6,7 +6,7 @@ import {
   randomPlaceShips,
   SHIPS,
   validateBoard,
-} from '../lib/shipUtils'
+} from '../src/shared/shipUtils'
 
 test('createEmptyBoard returns 10x10 grid of empty cells', () => {
   const board = createEmptyBoard()

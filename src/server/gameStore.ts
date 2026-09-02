@@ -1,5 +1,5 @@
-import { createEmptyBoard, randomPlaceShips, SHIPS } from './shipUtils.js'
-import type { GameMode, GameRoom, PlayerState, RoomSnapshot } from './types.js'
+import { createEmptyBoard, randomPlaceShips, SHIPS } from '../shared/shipUtils.js'
+import type { GameMode, GameRoom, PlayerState, RoomSnapshot } from '../shared/types.js'
 
 const rooms = new Map<string, GameRoom>()
 const socketRoomMap = new Map<string, string>()

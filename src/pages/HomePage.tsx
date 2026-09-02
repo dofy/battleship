@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import { Anchor, Bot, Plus, RefreshCw, Users } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { getSocket } from '../../lib/socket'
-import type { GameSocket } from '../../lib/socket'
-import type { GameMode, LobbyRoom, SocketErrorPayload } from '../../lib/types'
+import { getSocket } from '../lib/socket'
+import type { GameSocket } from '../lib/socket'
+import type { GameMode, LobbyRoom, SocketErrorPayload } from '../shared/types'
 import LobbyTable from '../components/LobbyTable'
 import GameVersion from '../components/GameVersion'
 import { useToast } from '../components/ToastProvider'
 import { useLocalStats } from '../hooks/useLocalStats'
-import { getOrCreatePlayerId } from '../../lib/playerIdentity'
+import { getOrCreatePlayerId } from '../lib/playerIdentity'
+import AppFooter from '../components/AppFooter'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { Input } from '../components/ui/input'
@@ -144,7 +145,7 @@ export default function HomePage() {
     : 0
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
       {/* Header */}
       <header className="flex items-center gap-3 border-b border-zinc-800 px-4 py-3 sm:px-6">
         <Anchor className="size-6 text-sky-400" aria-hidden="true" />
@@ -320,6 +321,7 @@ export default function HomePage() {
           </div>
         </div>
       </main>
+      <AppFooter />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
-import { chooseComputerTarget } from '../lib/computerPlayer'
-import { createEmptyBoard } from '../lib/shipUtils'
-import type { GameBoard } from '../lib/types'
+import { chooseComputerTarget } from '../src/server/computerPlayer'
+import { createEmptyBoard } from '../src/shared/shipUtils'
+import type { GameBoard } from '../src/shared/types'
 
 function placeHorizontalShip(board: GameBoard, shipId: string, row: number, col: number, size: number): void {
   for (let offset = 0; offset < size; offset++) {

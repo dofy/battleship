@@ -8,15 +8,15 @@ import {
 import {
   generateRoomId, randomPlaceShips, validateBoard, createEmptyBoard,
   processAttack, checkAllSunk, findSunkShip, SHIPS,
-} from './shipUtils.js'
+} from '../shared/shipUtils.js'
 import { chooseComputerTarget } from './computerPlayer.js'
 import type {
   ClientToServerEvents,
   InterServerEvents,
   ServerToClientEvents,
   SocketData,
-} from './socketTypes.js'
-import type { AttackResult, GameRoom, PlayerState } from './types.js'
+} from '../shared/socketTypes.js'
+import type { AttackResult, GameRoom, PlayerState } from '../shared/types.js'
 
 const TURN_SECONDS = 12
 const RECONNECT_GRACE_MS = 30000

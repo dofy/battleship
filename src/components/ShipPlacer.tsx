@@ -3,8 +3,8 @@ import { Check, RotateCw, Shuffle, Trash2, Undo2 } from 'lucide-react'
 import Board from './Board'
 import type { BoardPreview } from './Board'
 import { ShipArtwork } from './ShipArtwork'
-import { createEmptyBoard, SHIPS } from '../../lib/shipUtils'
-import type { Direction, GameBoard } from '../../lib/types'
+import { createEmptyBoard, SHIPS } from '../shared/shipUtils'
+import type { Direction, GameBoard } from '../shared/types'
 import { Button } from './ui/button'
 
 interface Placement {
@@ -207,12 +207,12 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }: Ship
   const preview = getPreview()
 
   return (
-    <div className="w-full space-y-3">
+    <div className="mx-auto w-full max-w-5xl space-y-4">
       <PlacementCountdown deadline={placingDeadline} />
 
-      <div className="flex flex-col items-center gap-3">
+      <div className="grid items-start gap-3 xl:grid-cols-[minmax(20rem,23rem)_minmax(0,31rem)] xl:justify-center xl:gap-12 2xl:gap-16">
         {/* Board */}
-        <div>
+        <div className="order-1 min-w-0 xl:order-2">
           <Board
             board={board}
             onCellClick={handleCellClick}
@@ -232,8 +232,9 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }: Ship
           </div>
         </div>
 
-        {/* Controls panel — horizontal on mobile, compact */}
-        <div className="w-full max-w-sm space-y-3">
+        {/* Fleet controls — second on mobile, command rail on wide screens. */}
+        <div className="order-2 mx-auto w-full max-w-sm space-y-3 xl:order-1 xl:mx-0 xl:max-w-none">
+          <h2 className="hidden text-center text-sm tracking-wide text-zinc-400 xl:block">Fleet controls</h2>
 
           {/* Current ship + direction */}
           {!ready && currentShip && (
@@ -266,20 +267,20 @@ export default function ShipPlacer({ placingDeadline, onSubmit, onRandom }: Ship
             </div>
           )}
 
-          {/* Ship list — horizontal scroll on mobile */}
+          {/* Ship list — horizontal scroll on mobile, complete manifest on wide screens. */}
           {!ready && (
             <div
               ref={shipListRef}
               role="list"
               aria-label="Fleet deployment order"
-              className="scrollbar-none flex touch-pan-x gap-2 overflow-x-auto overscroll-x-contain pb-1"
+              className="scrollbar-none flex touch-pan-x gap-2 overflow-x-auto overscroll-x-contain pb-1 xl:grid xl:touch-auto xl:grid-cols-2 xl:overflow-visible xl:overscroll-auto xl:pb-0"
             >
               {SHIPS.map((s, i) => (
                 <div
                   key={s.id}
                   role="listitem"
                   aria-current={i === shipIdx ? 'step' : undefined}
-                  className={`flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs ${
+                  className={`flex flex-shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-1.5 text-xs xl:min-w-0 ${
                     i === shipIdx ? 'border border-sky-700 bg-sky-950 text-zinc-100' :
                     i < shipIdx   ? 'bg-zinc-900 text-zinc-400 line-through' :
                     'bg-zinc-900 text-zinc-300'

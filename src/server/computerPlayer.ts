@@ -1,5 +1,5 @@
-import { SHIPS } from './shipUtils.js'
-import type { Coordinate, GameBoard } from './types.js'
+import { SHIPS } from '../shared/shipUtils.js'
+import type { Coordinate, GameBoard } from '../shared/types.js'
 
 type RandomSource = () => number
 

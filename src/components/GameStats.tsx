@@ -1,5 +1,5 @@
-import { SHIPS } from '../../lib/shipUtils'
-import type { RoomSnapshot } from '../../lib/types'
+import { SHIPS } from '../shared/shipUtils'
+import type { RoomSnapshot } from '../shared/types'
 
 interface GameStatsProps {
   roomState: RoomSnapshot

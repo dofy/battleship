@@ -3,18 +3,12 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "rootDir": ".",
+    "rootDir": "src",
     "outDir": "dist-server",
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": [
-    "server.ts",
-    "lib/gameStore.ts",
-    "lib/shipUtils.ts",
-    "lib/socketHandlers.ts",
-    "lib/socketTypes.ts"
-  ]
+  "include": ["src/server", "src/shared"]
 }

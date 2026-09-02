@@ -5,9 +5,9 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "concurrently -k -n SERVER,VITE -c yellow,cyan \"tsx watch server.ts --dev\" \"vite\"",
+    "dev": "concurrently -k -n SERVER,VITE -c yellow,cyan \"tsx watch src/server/index.ts --dev\" \"vite\"",
     "build": "vite build && tsc -p tsconfig.server.json",
-    "start": "NODE_ENV=production node dist-server/server.js",
+    "start": "NODE_ENV=production node dist-server/server/index.js",
     "test": "vitest run",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit"
   },
@@ -39,6 +39,6 @@
     "vite": "^8.2.2",
     "vitest": "^4.1.11"
   },
-  "version": "2.1.0",
+  "version": "2.1.1",
   "packageManager": "pnpm@10.33.0"
 }

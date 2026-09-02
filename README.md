@@ -1,21 +1,21 @@
 # ⚓ Battleship
 
-A fast fleet action against a friend or a computer captain.
+A fast, responsive fleet action against a friend or a computer captain.
 
 Sound general quarters, deploy your fleet in secret, and trade fire across enemy waters. Find and sink every opposing ship before your own fleet is sent to the bottom.
 
-**[Play Battleship](https://battleship.yahaha.net)**
+**[Play Battleship](https://battleship.yahaha.net)** · Current release `v2.1.1`
 
-![Battleship live battle showing the target grid, fleet status, and naval command interface](docs/images/battleship-gameplay.png)
+![Battleship v2.1.1 battle showing tactical line-art ships, target grid, and naval command interface](docs/images/battleship-gameplay.png)
 
 ## Start a battle
 
 1. Choose your callsign. It is saved automatically on your device.
 2. Choose **Computer** for an instant solo battle, or **Online** to challenge another player.
 3. For an online battle, send your friend the invite link or six-character room code.
-4. Deploy your fleet and open fire.
+4. Deploy your fleet from the tactical control panel and open fire.
 
-No account or installation is required. Play from a desktop, tablet, or phone browser.
+No account or installation is required. The command deck adapts to desktop, tablet, and phone screens.
 
 ## How to win
 
@@ -37,13 +37,13 @@ The first captain to sink all five enemy ships wins.
 | Destroyer | 3 cells |
 | Submarine | 2 cells |
 
-Ships can be placed horizontally or vertically, but they cannot overlap or extend beyond the grid. Use **Random** when you want to deploy a full fleet instantly.
+Ships can be placed horizontally or vertically, but they cannot overlap or extend beyond the grid. Each class has its own tactical line silhouette, so your fleet stays readable at a glance. Use **Random** when you want to deploy a full fleet instantly.
 
 ## Battle pace
 
 - You have 90 seconds to deploy. Any unfinished fleet is placed automatically when time runs out.
 - Each turn lasts 12 seconds. If time expires, the game fires at an untouched coordinate for you.
-- Shots fire immediately by default to keep battles moving quickly.
+- Shots fire immediately by default to keep battles moving quickly. Your chosen sector stays locked while the shot report arrives.
 - Prefer extra protection against misclicks? Turn on shot confirmation above the enemy grid, then click the same coordinate again to confirm.
 - If your connection drops briefly, the game will try to return you to the same battle.
 

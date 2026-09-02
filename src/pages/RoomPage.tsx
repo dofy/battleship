@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Anchor, Bot, Copy, LogOut, RotateCcw, Share2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { getSocket } from '../../lib/socket'
-import type { GameSocket } from '../../lib/socket'
-import { getOrCreatePlayerId } from '../../lib/playerIdentity'
-import type { AttackAcknowledgement } from '../../lib/socketTypes'
-import type { AttackResult, Coordinate, GameBoard, GameResultState, RoomSnapshot, SocketErrorPayload } from '../../lib/types'
+import { getSocket } from '../lib/socket'
+import type { GameSocket } from '../lib/socket'
+import { getOrCreatePlayerId } from '../lib/playerIdentity'
+import type { AttackAcknowledgement } from '../shared/socketTypes'
+import type { AttackResult, Coordinate, GameBoard, GameResultState, RoomSnapshot, SocketErrorPayload } from '../shared/types'
 import Board from '../components/Board'
 import type { AttackMarker } from '../components/Board'
 import ShipPlacer from '../components/ShipPlacer'
@@ -15,7 +15,8 @@ import GameOverOverlay from '../components/GameOverOverlay'
 import LeaveBattleDialog from '../components/LeaveBattleDialog'
 import { useToast } from '../components/ToastProvider'
 import { useLocalStats } from '../hooks/useLocalStats'
-import { randomPlaceShips, createEmptyBoard } from '../../lib/shipUtils'
+import { randomPlaceShips, createEmptyBoard } from '../shared/shipUtils'
+import AppFooter from '../components/AppFooter'
 import { Button } from '../components/ui/button'
 import { Switch } from '../components/ui/switch'
 
@@ -231,6 +232,7 @@ export default function RoomPage() {
       attackPendingRef.current = false
       setAttackPending(false)
       setSelectedTarget(null)
+      setLastAttack(previous => previous?.result === null ? null : previous)
       if (code === 'ACTIVE_ROOM' && activeRoomId) {
         navigate(`/room/${activeRoomId}`, { replace: true })
         return
@@ -311,6 +313,7 @@ export default function RoomPage() {
       if (error || !response?.ok) {
         attackPendingRef.current = false
         setAttackPending(false)
+        setLastAttack(previous => previous?.result === null ? null : previous)
         showToast({
           title: 'Shot not sent',
           description: response?.message || 'The shot was not confirmed. Try again.',
@@ -442,7 +445,7 @@ export default function RoomPage() {
           : `${opponent?.nickname ?? 'Opponent'} has the watch…`)
     : status === 'finished' ? 'Battle complete.' : ''
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100">
+    <div className="flex min-h-screen flex-col bg-zinc-950 text-zinc-100">
       {gameResult && <GameOverOverlay result={gameResult} onDismiss={dismissGameResult} />}
       <LeaveBattleDialog
         open={leaveDialogOpen}
@@ -553,6 +556,7 @@ export default function RoomPage() {
                   label={`Target: ${opponent.nickname}${opponentConnected ? '' : ' (disconnected)'}`}
                   lastAttack={lastAttack}
                   selectedCell={selectedTarget}
+                  pendingCell={attackPending && lastAttack?.result === null ? lastAttack : null}
                   sunkCells={visibleSunkCells}
                   headerAction={status === 'playing' ? (
                     <label className="flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-lg border border-zinc-700 px-2.5 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800">
@@ -589,6 +593,7 @@ export default function RoomPage() {
           </div>
         )}
       </main>
+      <AppFooter />
     </div>
   )
 }

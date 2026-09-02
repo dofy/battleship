@@ -19,10 +19,7 @@
   "include": [
     "src",
     "__tests__",
-    "lib/playerIdentity.ts",
-    "lib/shipUtils.ts",
-    "lib/socket.ts",
-    "lib/socketTypes.ts",
     "vite.config.ts"
-  ]
+  ],
+  "exclude": ["src/server"]
 }

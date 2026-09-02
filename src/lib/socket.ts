@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client'
 import type { Socket } from 'socket.io-client'
-import type { ClientToServerEvents, ServerToClientEvents } from './socketTypes'
+import type { ClientToServerEvents, ServerToClientEvents } from '../shared/socketTypes'
 
 export type GameSocket = Socket<ServerToClientEvents, ClientToServerEvents>
 

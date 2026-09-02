@@ -2,13 +2,13 @@ import { createServer } from 'node:http'
 import path from 'node:path'
 import { Server } from 'socket.io'
 import sirv from 'sirv'
-import { registerHandlers } from './lib/socketHandlers.js'
+import { registerHandlers } from './socketHandlers.js'
 import type {
   ClientToServerEvents,
   InterServerEvents,
   ServerToClientEvents,
   SocketData,
-} from './lib/socketTypes.js'
+} from '../shared/socketTypes.js'
 
 const isProduction = process.env.NODE_ENV === 'production'
 const serveClient = isProduction

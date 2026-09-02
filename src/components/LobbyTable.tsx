@@ -1,4 +1,4 @@
-import type { LobbyRoom } from '../../lib/types'
+import type { LobbyRoom } from '../shared/types'
 import { Button } from './ui/button'
 
 interface LobbyTableProps {

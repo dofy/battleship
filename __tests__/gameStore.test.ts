@@ -3,8 +3,8 @@ import {
   createRoom, getRoom, addPlayer, addComputerPlayer, bindPlayerSocket, markPlayerDisconnected,
   removeRoom, getPublicWaitingRooms, toSnapshot, getAllRooms, getRoomBySocket,
   getRoomByPlayerId, resetForRematch,
-} from '../lib/gameStore'
-import { createEmptyBoard, randomPlaceShips, SHIPS, validateBoard } from '../lib/shipUtils'
+} from '../src/server/gameStore'
+import { createEmptyBoard, randomPlaceShips, SHIPS, validateBoard } from '../src/shared/shipUtils'
 
 test('createRoom creates room with waiting status', () => {
   const room = createRoom('ABC123', 'player1', 'Alice', true)

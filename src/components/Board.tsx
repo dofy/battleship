@@ -1,8 +1,8 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
 import { Crosshair } from 'lucide-react'
-import type { BoardCell, Coordinate, Direction, GameBoard } from '../../lib/types'
-import { SHIPS } from '../../lib/shipUtils'
+import type { BoardCell, Coordinate, Direction, GameBoard } from '../shared/types'
+import { SHIPS } from '../shared/shipUtils'
 import { BoardShip } from './ShipArtwork'
 import type { ShipVisualState } from './ShipArtwork'
 
@@ -47,6 +47,7 @@ interface BoardProps {
   sunkCells?: Set<string>
   shake?: number | null
   selectedCell?: Coordinate | null
+  pendingCell?: Coordinate | null
   headerAction?: ReactNode
 }
 
@@ -56,7 +57,7 @@ function coordinateLabel(row: number, col: number): string {
 
 function Board({
   board, onCellClick, interactive = false, label, lastAttack,
-  onCellHover, onBoardLeave, preview, sunkCells, shake, selectedCell, headerAction,
+  onCellHover, onBoardLeave, preview, sunkCells, shake, selectedCell, pendingCell, headerAction,
 }: BoardProps) {
   const [isShaking, setIsShaking] = useState(false)
   const [focusCell, setFocusCell] = useState({ row: 0, col: 0 })
@@ -130,8 +131,9 @@ function Board({
   function cellClass(cell: BoardCell, row: number, col: number): string {
     const isSunk = sunkCells?.has(`${row},${col}`)
     const selected = selectedCell?.row === row && selectedCell?.col === col
+    const pending = pendingCell?.row === row && pendingCell?.col === col
     const base = 'board-cell relative flex items-center justify-center overflow-visible rounded-sm border p-0 text-xs font-bold transition-colors focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 sm:text-sm '
-    const selection = selected
+    const selection = selected || pending
       ? ' !border-amber-300 !bg-amber-400/25 z-10 outline outline-2 outline-offset-2 outline-amber-300 shadow-[inset_0_0_12px_rgba(251,191,36,0.35)]'
       : ''
     if (isSunk && cell.attacked && cell.hasShip) return base + 'bg-orange-950 border-orange-700 text-orange-300 cursor-default' + selection
@@ -214,7 +216,9 @@ function Board({
                 const previewVisual = previewCell?.isBow && preview && preview.cells.length === preview.size
                 const isTarget = lastAttack?.row === rowIndex && lastAttack?.col === colIndex && lastAttack.result
                 const isSelected = selectedCell?.row === rowIndex && selectedCell?.col === colIndex
-                const cellLabel = `${coordinateLabel(rowIndex, colIndex)}, ${cell.attacked ? (cell.hasShip ? 'hit' : 'miss') : isSelected ? 'target locked; activate again to fire' : 'not attacked'}`
+                const isPending = pendingCell?.row === rowIndex && pendingCell?.col === colIndex
+                const isHighlighted = isSelected || isPending
+                const cellLabel = `${coordinateLabel(rowIndex, colIndex)}, ${cell.attacked ? (cell.hasShip ? 'hit' : 'miss') : isPending ? 'shot fired; awaiting result' : isSelected ? 'target locked; activate again to fire' : 'not attacked'}`
                 const content = (
                   <>
                     {shipVisual && (
@@ -235,7 +239,7 @@ function Board({
                     )}
                     {!previewCell && cell.attacked && cell.hasShip && <span aria-hidden="true" className="relative z-10">●</span>}
                     {!previewCell && cell.attacked && !cell.hasShip && <span aria-hidden="true" className="relative z-10 text-zinc-400">·</span>}
-                    {isSelected && !cell.attacked && !previewCell && (
+                    {isHighlighted && !cell.attacked && !previewCell && (
                       <Crosshair
                         aria-hidden="true"
                         className="target-lock-marker relative z-20 size-5 text-amber-200 drop-shadow-[0_0_5px_rgba(253,230,138,0.95)]"
@@ -262,7 +266,7 @@ function Board({
                       type="button"
                       role="gridcell"
                       aria-label={cellLabel}
-                      aria-selected={isSelected}
+                      aria-selected={isHighlighted}
                       tabIndex={focusCell.row === rowIndex && focusCell.col === colIndex ? 0 : -1}
                       className={previewCell ? previewClass(previewCell, preview?.valid ?? false) : cellClass(cell, rowIndex, colIndex)}
                       onFocus={() => setFocusCell({ row: rowIndex, col: colIndex })}
