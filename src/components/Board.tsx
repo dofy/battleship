@@ -1,5 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent, ReactNode } from 'react'
+import { Crosshair } from 'lucide-react'
 import type { BoardCell, Coordinate, Direction, GameBoard } from '../../lib/types'
 import { SHIPS } from '../../lib/shipUtils'
 import { BoardShip } from './ShipArtwork'
@@ -130,7 +131,9 @@ function Board({
     const isSunk = sunkCells?.has(`${row},${col}`)
     const selected = selectedCell?.row === row && selectedCell?.col === col
     const base = 'board-cell relative flex items-center justify-center overflow-visible rounded-sm border p-0 text-xs font-bold transition-colors focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 sm:text-sm '
-    const selection = selected ? ' ring-2 ring-sky-300 ring-offset-2 ring-offset-zinc-950 z-10 sonar-target' : ''
+    const selection = selected
+      ? ' !border-amber-300 !bg-amber-400/25 z-10 outline outline-2 outline-offset-2 outline-amber-300 shadow-[inset_0_0_12px_rgba(251,191,36,0.35)]'
+      : ''
     if (isSunk && cell.attacked && cell.hasShip) return base + 'bg-orange-950 border-orange-700 text-orange-300 cursor-default' + selection
     if (cell.attacked && cell.hasShip) return base + 'bg-red-950 border-red-800 text-red-100 cursor-default' + selection
     if (cell.attacked && !cell.hasShip) return base + 'bg-zinc-800 border-zinc-700 text-zinc-400 cursor-default' + selection
@@ -210,7 +213,8 @@ function Board({
                 const shipVisual = shipVisuals.get(key)
                 const previewVisual = previewCell?.isBow && preview && preview.cells.length === preview.size
                 const isTarget = lastAttack?.row === rowIndex && lastAttack?.col === colIndex && lastAttack.result
-                const cellLabel = `${coordinateLabel(rowIndex, colIndex)}, ${cell.attacked ? (cell.hasShip ? 'hit' : 'miss') : 'not attacked'}`
+                const isSelected = selectedCell?.row === rowIndex && selectedCell?.col === colIndex
+                const cellLabel = `${coordinateLabel(rowIndex, colIndex)}, ${cell.attacked ? (cell.hasShip ? 'hit' : 'miss') : isSelected ? 'target locked; activate again to fire' : 'not attacked'}`
                 const content = (
                   <>
                     {shipVisual && (
@@ -231,6 +235,13 @@ function Board({
                     )}
                     {!previewCell && cell.attacked && cell.hasShip && <span aria-hidden="true" className="relative z-10">●</span>}
                     {!previewCell && cell.attacked && !cell.hasShip && <span aria-hidden="true" className="relative z-10 text-zinc-400">·</span>}
+                    {isSelected && !cell.attacked && !previewCell && (
+                      <Crosshair
+                        aria-hidden="true"
+                        className="target-lock-marker relative z-20 size-5 text-amber-200 drop-shadow-[0_0_5px_rgba(253,230,138,0.95)]"
+                        strokeWidth={2.75}
+                      />
+                    )}
                     {isTarget && lastAttack.result === 'hit' && (
                       <div key={`hfx-${lastAttack.ts}`} className="hit-fx" aria-hidden="true">💥</div>
                     )}
@@ -251,7 +262,7 @@ function Board({
                       type="button"
                       role="gridcell"
                       aria-label={cellLabel}
-                      aria-selected={selectedCell?.row === rowIndex && selectedCell?.col === colIndex}
+                      aria-selected={isSelected}
                       tabIndex={focusCell.row === rowIndex && focusCell.col === colIndex ? 0 : -1}
                       className={previewCell ? previewClass(previewCell, preview?.valid ?? false) : cellClass(cell, rowIndex, colIndex)}
                       onFocus={() => setFocusCell({ row: rowIndex, col: colIndex })}

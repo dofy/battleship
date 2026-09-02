@@ -71,9 +71,9 @@ button, input {
   100% { transform: scale(2.8); opacity: 0; border-width: 1px; }
 }
 
-@keyframes sonar {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(125, 211, 252, 0.15); }
-  50% { box-shadow: 0 0 0 6px rgba(125, 211, 252, 0); }
+@keyframes target-lock-pulse {
+  0%, 100% { transform: scale(0.88); opacity: 0.82; }
+  50% { transform: scale(1.08); opacity: 1; }
 }
 
 @keyframes shake {
@@ -144,7 +144,7 @@ button, input {
   animation: ripple 0.7s ease-out forwards;
 }
 
-.sonar-target { animation: sonar 1.4s ease-in-out infinite; }
+.target-lock-marker { animation: target-lock-pulse 0.9s ease-in-out infinite; }
 .shake-board { animation: shake 0.45s ease-in-out; }
 .overlay { animation: overlay-in 0.35s ease-out both; }
 .card { animation: card-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
@@ -161,7 +161,7 @@ button, input {
     animation-iteration-count: 1 !important;
   }
 
-  .hit-fx, .miss-ring, .sonar-target, .shake-board,
+  .hit-fx, .miss-ring, .target-lock-marker, .shake-board,
   .overlay, .card, .gold, .skull, .bubble, .wave,
   .battle-dialog-overlay, .battle-dialog-content {
     animation: none;

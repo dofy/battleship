@@ -42,15 +42,26 @@ function TurnCountdown({ deadline, active }: { deadline: number | null; active: 
   const percentage = Math.min(100, (remaining / (TURN_SECONDS * 1000)) * 100)
 
   return (
-    <div className="ml-3 w-16 shrink-0 text-right" role="timer" aria-label={active ? `${seconds} seconds remaining` : 'Battle paused'}>
+    <div className="ml-3 grid h-7 w-16 shrink-0 grid-rows-[1.25rem_0.25rem] content-between text-right" role="timer" aria-label={active ? `${seconds} seconds remaining` : 'Battle paused'}>
       <span className={`font-mono font-bold tabular-nums ${seconds > 0 && seconds <= 3 ? 'text-red-300' : 'text-zinc-300'}`}>
         {active && deadline ? `${seconds}s` : 'PAUSED'}
       </span>
-      <div className="mt-1 h-1 overflow-hidden rounded-full bg-zinc-700">
+      <div className="h-1 overflow-hidden rounded-full bg-zinc-700">
         <div
           className={`h-full origin-left rounded-full ${seconds > 0 && seconds <= 3 ? 'bg-red-500' : 'bg-sky-500'}`}
           style={{ transform: `scaleX(${percentage / 100})` }}
         />
+      </div>
+    </div>
+  )
+}
+
+function ComputerTurnIndicator() {
+  return (
+    <div className="ml-3 grid h-7 w-16 shrink-0 grid-rows-[1.25rem_0.25rem] content-between text-right" role="status" aria-label="Computer is thinking">
+      <span className="font-mono text-xs font-bold tracking-wider text-sky-400">THINKING…</span>
+      <div className="h-1 overflow-hidden rounded-full bg-zinc-700">
+        <div className="h-full w-1/2 animate-pulse rounded-full bg-sky-500" />
       </div>
     </div>
   )
@@ -474,10 +485,10 @@ export default function RoomPage() {
       <main className="mx-auto max-w-7xl px-3 py-3 sm:px-6 sm:py-6">
         {(status === 'playing' || status === 'finished' || message) && (
           <div className="mb-3 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm sm:mb-4">
-            <div aria-live="polite" className="flex min-h-5 items-center justify-between gap-2 text-zinc-200">
+            <div aria-live="polite" className="flex min-h-7 items-center justify-between gap-2 text-zinc-200">
               <span>{message || defaultMessage}</span>
               {status === 'playing' && (opponentIsComputer && !isMyTurn
-                ? <span className="ml-3 shrink-0 font-mono text-xs font-bold tracking-wider text-sky-400">THINKING…</span>
+                ? <ComputerTurnIndicator />
                 : <TurnCountdown active={opponentConnected} deadline={roomState.turnDeadline} />)}
             </div>
           </div>
