@@ -1,86 +1,81 @@
-# ⚓ Battleship — 1v1 Multiplayer Naval Combat
+# ⚓ Battleship
 
-Real-time multiplayer Battleship game. Create or join a room, place your fleet, and sink the enemy.
+A fast fleet action against a friend or a computer captain.
 
-## Tech Stack
+Sound general quarters, deploy your fleet in secret, and trade fire across enemy waters. Find and sink every opposing ship before your own fleet is sent to the bottom.
 
-- **Next.js 16** — Pages Router + Custom Server
-- **Socket.IO 4** — Real-time bidirectional communication (shared HTTP server)
-- **Tailwind CSS v4** — Responsive zinc/sky/teal interface
-- **System fonts** — No render-blocking external font request
-- **In-memory state** — Game state stored in Node.js process memory (`Map`), no external database
+**[Play Battleship](https://battleship.yahaha.net)**
 
-## Features
+![Battleship live battle showing the target grid, fleet status, and naval command interface](docs/images/battleship-gameplay.png)
 
-- Create public/private rooms, or join via 6-character room code
-- Public room lobby with live status
-- Placement phase: manually or randomly deploy ships, 90-second countdown (auto-random on timeout)
-- Turn-based combat with 12-second per-turn countdown (auto random attack on timeout)
-- Hit / miss / sunk feedback with coordinate labels (e.g. `B4 — Direct hit!`)
-- Visual attack animations: 💥 explosion for hits, ripple rings for misses — on both offense and defense boards
-- Full-screen Victory / Defeat overlay with confetti and animations
-- Rematch voting after game ends
-- Stable player identity with a 30-second reconnect grace period
-- Local `localStorage` win/loss record
+## Start a battle
 
-## Fleet Configuration
+1. Choose your callsign. It is saved automatically on your device.
+2. Choose **Computer** for an instant solo battle, or **Online** to challenge another player.
+3. For an online battle, send your friend the invite link or six-character room code.
+4. Deploy your fleet and open fire.
 
-| Ship | Cells | Count |
-|------|-------|-------|
-| Carrier | 5 | 1 |
-| Battleship | 4 | 1 |
-| Cruiser | 3 | 1 |
-| Destroyer | 3 | 1 |
-| Submarine | 2 | 1 |
+No account or installation is required. Play from a desktop, tablet, or phone browser.
 
-## Quick Start
+## How to win
+
+Each captain secretly places five ships across a 10 × 10 ocean grid. During battle, take turns choosing a coordinate in enemy waters:
+
+- **Miss** — the shot lands in open water.
+- **Hit** — the shot strikes part of a ship.
+- **Sunk** — every section of that ship has been hit.
+
+The first captain to sink all five enemy ships wins.
+
+## Your fleet
+
+| Ship | Size |
+| --- | ---: |
+| Carrier | 5 cells |
+| Battleship | 4 cells |
+| Cruiser | 3 cells |
+| Destroyer | 3 cells |
+| Submarine | 2 cells |
+
+Ships can be placed horizontally or vertically, but they cannot overlap or extend beyond the grid. Use **Random** when you want to deploy a full fleet instantly.
+
+## Battle pace
+
+- You have 90 seconds to deploy. Any unfinished fleet is placed automatically when time runs out.
+- Each turn lasts 12 seconds. If time expires, the game fires at an untouched coordinate for you.
+- Shots fire immediately by default to keep battles moving quickly.
+- Prefer extra protection against misclicks? Turn on shot confirmation above the enemy grid, then click the same coordinate again to confirm.
+- If your connection drops briefly, the game will try to return you to the same battle.
+
+After the battle, both captains can vote for an immediate rematch. Your win and loss record stays in your current browser.
+
+In a computer battle, Admiral CPU searches the ocean and follows up around a successful hit. A rematch starts as soon as you request one.
+
+## Signals from the bridge
+
+The bridge crew keeps reports short when the guns open:
+
+- **General quarters** — all hands prepare for battle.
+- **Fire at will** — choose any untouched sector and open fire.
+- **Direct hit** — your shot struck an enemy ship.
+- **Shot fell wide** — open water; adjust your aim.
+- **Target locked** — with shot confirmation enabled, choose the same sector again to fire.
+- **Sent to the bottom** — the enemy fleet has been destroyed.
+
+## Captain's tips
+
+- Avoid placing every large ship in the same area.
+- After a hit, check adjacent coordinates to discover which way the ship extends.
+- On a phone, swipe sideways through the fleet list during deployment.
+- Private battles do not appear in the open lobby. Join them with a room code or invite link.
+
+## Play locally
+
+To run a battle on your own computer:
 
 ```bash
-# Install dependencies
-pnpm install --frozen-lockfile
-
-# Development
+pnpm install
 pnpm dev
-
-# Production
-pnpm build && pnpm start
 ```
 
-Open `http://localhost:3000` to play.
-
-## Project Structure
-
-```
-battleship/
-├── server.js                   # Next.js Custom Server + Socket.IO init
-├── lib/
-│   ├── gameStore.js            # In-memory game state management
-│   ├── socketHandlers.js       # Socket.IO event handlers
-│   ├── shipUtils.js            # Core game logic (ship placement, hit detection)
-│   ├── socket.js               # Client-side Socket.IO singleton
-│   └── playerIdentity.js       # Stable local player identity for reconnects
-├── pages/
-│   ├── _app.js                 # Global font, favicon
-│   ├── index.js                # Lobby (create/join room, combat record)
-│   └── room/[id].js            # Game room (placement + combat)
-├── components/
-│   ├── Board.js                # 10×10 grid with attack animations
-│   ├── ShipPlacer.js           # Touch- and keyboard-friendly fleet placement
-│   ├── LobbyTable.js           # Public room list
-│   ├── GameStats.js            # Combat sidebar (fleet status, shot stats)
-│   └── GameOverOverlay.js      # Full-screen Victory/Defeat animation
-├── hooks/
-│   └── useLocalStats.js        # localStorage win/loss hook
-└── public/
-    └── favicon.svg             # Anchor icon in sky/zinc palette
-```
-
-## Tests
-
-```bash
-pnpm test
-```
-
-## Railway deployment
-
-`railway.json` configures the `/healthz` deployment health check and restart policy. Game rooms remain in process memory, so the service must stay at one replica; a deploy or process restart ends active rooms. Horizontal scaling or restart-safe matches require moving room state to a shared store and using a Socket.IO adapter such as Redis.
+Open [http://localhost:3000](http://localhost:3000), then fight the computer or invite another captain.

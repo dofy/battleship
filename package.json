@@ -1,33 +1,44 @@
 {
   "private": true,
+  "type": "module",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
-    "dev": "node server.js",
-    "build": "next build",
-    "start": "NODE_ENV=production node server.js",
-    "test": "jest --testPathPatterns='__tests__'"
-  },
-  "jest": {
-    "testEnvironment": "node"
+    "dev": "concurrently -k -n SERVER,VITE -c yellow,cyan \"tsx watch server.ts --dev\" \"vite\"",
+    "build": "vite build && tsc -p tsconfig.server.json",
+    "start": "NODE_ENV=production node dist-server/server.js",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit"
   },
   "dependencies": {
-    "next": "^16.2.1",
+    "@radix-ui/react-alert-dialog": "1.1.15",
+    "@radix-ui/react-switch": "^1.3.7",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.39.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-router-dom": "^7.18.3",
+    "sirv": "^3.0.2",
     "socket.io": "^4.8.3",
-    "socket.io-client": "^4.8.3"
+    "socket.io-client": "^4.8.3",
+    "sonner": "^2.0.8",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.2.2",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
-    "jest": "^30.3.0",
-    "jest-environment-jsdom": "^30.3.0",
-    "postcss": "^8.5.8",
-    "tailwindcss": "^4.2.2"
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.4.1",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
+    "@vitejs/plugin-react": "^6.1.1",
+    "concurrently": "^10.0.5",
+    "tailwindcss": "^4.2.2",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
   },
-  "version": "2.0.0",
+  "version": "2.1.0",
   "packageManager": "pnpm@10.33.0"
 }
