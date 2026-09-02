@@ -4,9 +4,9 @@ A fast, responsive fleet action against a friend or a computer captain.
 
 Sound general quarters, deploy your fleet in secret, and trade fire across enemy waters. Find and sink every opposing ship before your own fleet is sent to the bottom.
 
-**[Play Battleship](https://battleship.yahaha.net)** · Current release `v2.1.1`
+**[Play Battleship](https://battleship.yahaha.net)** · Current release `v2.1.2`
 
-![Battleship v2.1.1 battle showing tactical line-art ships, target grid, and naval command interface](docs/images/battleship-gameplay.png)
+![Battleship v2.1.2 battle showing detailed overhead ships, target grid, and naval command interface](docs/images/battleship-gameplay.png)
 
 ## Start a battle
 
@@ -37,7 +37,7 @@ The first captain to sink all five enemy ships wins.
 | Destroyer | 3 cells |
 | Submarine | 2 cells |
 
-Ships can be placed horizontally or vertically, but they cannot overlap or extend beyond the grid. Each class has its own tactical line silhouette, so your fleet stays readable at a glance. Use **Random** when you want to deploy a full fleet instantly.
+Ships can be placed horizontally or vertically, but they cannot overlap or extend beyond the grid. Each class has its own detailed overhead silhouette, so your fleet stays readable at a glance. Use **Random** when you want to deploy a full fleet instantly.
 
 ## Battle pace
 

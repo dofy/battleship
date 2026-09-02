@@ -184,14 +184,14 @@ function Board({
 
   return (
     <section className="board-section w-full max-w-full overflow-x-auto pb-1 text-center">
-      {label && (headerAction ? (
-        <div className="mx-auto mb-2 flex w-full max-w-[30rem] items-center justify-between gap-3">
-          <h2 className="min-w-0 truncate text-sm tracking-wide text-zinc-400">{label}</h2>
+      {label && (
+        <div className={`mx-auto mb-2 flex min-h-11 w-full max-w-[30rem] items-center gap-3 ${headerAction ? 'justify-between' : 'justify-center'}`}>
+          <h2 className={`text-sm tracking-wide text-zinc-400 ${headerAction ? 'min-w-0 truncate text-left' : 'text-center'}`}>
+            {label}
+          </h2>
           {headerAction}
         </div>
-      ) : (
-        <h2 className="mb-2 text-center text-sm tracking-wide text-zinc-400">{label}</h2>
-      ))}
+      )}
       <div
         className={`board-shell inline-block p-1.5 sm:p-2 bg-zinc-900 border border-zinc-700 rounded-lg ${isShaking ? 'shake-board' : ''}`}
         onMouseLeave={onBoardLeave}

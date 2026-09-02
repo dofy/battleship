@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Anchor, Bot, Copy, LogOut, RotateCcw, Share2 } from 'lucide-react'
+import { Anchor, Bot, CircleAlert, Copy, LogOut, RotateCcw, Share2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSocket } from '../lib/socket'
 import type { GameSocket } from '../lib/socket'
@@ -396,11 +396,13 @@ export default function RoomPage() {
   if (fatalError) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-4 text-zinc-100">
-        <div className="w-full max-w-sm rounded-xl border border-red-900 bg-zinc-900 p-6 text-center">
-          <div className="mb-3 text-4xl" aria-hidden="true">⚓</div>
+        <div className="w-full max-w-sm rounded-xl border border-zinc-800 bg-zinc-900/90 p-6 text-center shadow-2xl shadow-black/20">
+          <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full border border-red-900/60 bg-red-950/30 text-red-300">
+            <CircleAlert className="size-6" aria-hidden="true" />
+          </div>
           <h1 className="text-lg font-bold">Unable to join battle</h1>
           <p role="alert" className="mt-2 text-sm text-zinc-300">{fatalError}</p>
-          <Button onClick={() => navigate('/')} className="mt-5 w-full">
+          <Button onClick={() => navigate('/')} variant="outline" className="mt-5 w-full border-zinc-600 bg-transparent">
             Back to Lobby
           </Button>
         </div>

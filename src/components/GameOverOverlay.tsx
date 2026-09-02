@@ -3,6 +3,8 @@ import type { MouseEvent } from 'react'
 import type { GameResultState } from '../shared/types'
 import { Button } from './ui/button'
 
+const AUTO_DISMISS_MS = 12_000
+
 function Confetti() {
   const ref = useRef<HTMLCanvasElement | null>(null)
 
@@ -104,7 +106,7 @@ export default function GameOverOverlay({ result, onDismiss }: GameOverOverlayPr
   const isWin = result === 'win'
 
   useEffect(() => {
-    const t = setTimeout(onDismiss, 7000)
+    const t = setTimeout(onDismiss, AUTO_DISMISS_MS)
     return () => clearTimeout(t)
   }, [onDismiss])
 
@@ -139,9 +141,8 @@ export default function GameOverOverlay({ result, onDismiss }: GameOverOverlayPr
           />
         )}
 
-        <div className="card relative z-10 text-center select-none px-8 py-8 sm:px-12 sm:py-10 rounded-2xl mx-4"
+        <div className="card relative z-10 mx-4 select-none px-8 py-8 text-center sm:px-12 sm:py-10"
           onClick={(event: MouseEvent<HTMLDivElement>) => event.stopPropagation()}
-          style={{ background: isWin ? 'rgba(0,0,0,0.45)' : 'rgba(15,20,30,0.7)', backdropFilter: 'blur(8px)' }}
         >
           <div className="text-7xl sm:text-8xl mb-4 sm:mb-5" style={{ lineHeight: 1 }}>
             {isWin
@@ -151,12 +152,12 @@ export default function GameOverOverlay({ result, onDismiss }: GameOverOverlayPr
           </div>
 
           {isWin ? (
-            <div id="battle-result-title" className="gold text-4xl sm:text-5xl font-black tracking-widest text-yellow-400">
-              V I C T O R Y
+            <div id="battle-result-title" className="gold font-mono text-4xl font-normal tracking-[0.32em] text-yellow-400 sm:text-5xl">
+              VICTORY
             </div>
           ) : (
-            <div id="battle-result-title" className="text-4xl sm:text-5xl font-black tracking-widest text-zinc-300">
-              D E F E A T
+            <div id="battle-result-title" className="font-mono text-4xl font-normal tracking-[0.32em] text-zinc-300 sm:text-5xl">
+              DEFEAT
             </div>
           )}
 
@@ -164,7 +165,7 @@ export default function GameOverOverlay({ result, onDismiss }: GameOverOverlayPr
             autoFocus
             onClick={onDismiss}
             variant="outline"
-            className="mt-6 bg-zinc-900/80 tracking-widest"
+            className="mt-6 bg-zinc-900/80 font-mono font-normal tracking-widest"
           >
             Continue
           </Button>
