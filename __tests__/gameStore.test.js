@@ -1,4 +1,8 @@
-const { createRoom, getRoom, addPlayer, removeRoom, getPublicWaitingRooms, toSnapshot, getAllRooms, getRoomBySocket, resetForRematch } = require('../lib/gameStore')
+const {
+  createRoom, getRoom, addPlayer, bindPlayerSocket, markPlayerDisconnected,
+  removeRoom, getPublicWaitingRooms, toSnapshot, getAllRooms, getRoomBySocket,
+  getRoomByPlayerId, resetForRematch,
+} = require('../lib/gameStore')
 
 test('createRoom creates room with waiting status', () => {
   const room = createRoom('ABC123', 'player1', 'Alice', true)
@@ -101,15 +105,15 @@ test('getRoomBySocket returns null/undefined after removeRoom', () => {
   expect(getRoomBySocket('sock4')).toBeFalsy()
 })
 
-// ── 新增：winner 存 socketId ────────────────────────────
-test('toSnapshot winner is nickname, winnerId is socketId', () => {
+// ── winner uses the stable player id ───────────────────
+test('toSnapshot winner is nickname, winnerId is stable player id', () => {
   const room = createRoom('WIN001', 'p1', 'Alice', true)
   addPlayer(room, 'p2', 'Bob')
   room.status = 'finished'
-  room.winner = 'p1'   // socketId
+  room.winner = 'p1'
   const snap = toSnapshot(room, 'p1')
   expect(snap.winner).toBe('Alice')    // nickname 用于显示
-  expect(snap.winnerId).toBe('p1')     // socketId 用于判断
+  expect(snap.winnerId).toBe('p1')
 })
 
 test('toSnapshot winner null when no winner', () => {
@@ -132,4 +136,52 @@ test('resetForRematch clears turnTimer and resets state', () => {
   expect(room.winner).toBeNull()
   expect(room.turnTimer).toBeNull()
   expect(room.players.every(p => !p.placingReady)).toBe(true)
+})
+
+test('stable player id survives a socket replacement', () => {
+  const room = createRoom('REC001', 'socket-old', 'Alice', true, 'stable-alice')
+  const deadline = Date.now() + 30000
+  markPlayerDisconnected(room, 'socket-old', deadline)
+
+  expect(getRoomBySocket('socket-old')).toBeFalsy()
+  expect(getRoomByPlayerId('stable-alice')?.id).toBe('REC001')
+  expect(room.players[0].connected).toBe(false)
+
+  bindPlayerSocket(room, 'stable-alice', 'socket-new')
+  expect(getRoomBySocket('socket-new')?.id).toBe('REC001')
+  expect(room.players[0]).toMatchObject({
+    id: 'stable-alice',
+    socketId: 'socket-new',
+    connected: true,
+    disconnectDeadline: null,
+  })
+})
+
+test('snapshot uses stable ids for turn and winner after reconnect', () => {
+  const room = createRoom('REC002', 'socket-a', 'Alice', true, 'stable-a')
+  addPlayer(room, 'socket-b', 'Bob', 'stable-b')
+  room.status = 'finished'
+  room.currentTurn = 'stable-a'
+  room.winner = 'stable-a'
+
+  const snapshot = toSnapshot(room, 'stable-b')
+  expect(snapshot.currentTurn).toBe('stable-a')
+  expect(snapshot.winnerId).toBe('stable-a')
+  expect(snapshot.players.map(player => player.id)).toEqual(['stable-a', 'stable-b'])
+})
+
+test('snapshot preserves sunk-ship stats across a refresh', () => {
+  const { randomPlaceShips, createEmptyBoard, SHIPS } = require('../lib/shipUtils')
+  const room = createRoom('REC003', 'socket-c', 'Alice', true, 'stable-c')
+  addPlayer(room, 'socket-d', 'Bob', 'stable-d')
+  room.status = 'playing'
+  room.players[1].board = randomPlaceShips(createEmptyBoard())
+  const ship = SHIPS[0]
+  room.players[1].board
+    .filter(Boolean)
+    .flat()
+    .filter(cell => cell.shipId === ship.id)
+    .forEach(cell => { cell.attacked = true })
+
+  expect(toSnapshot(room, 'stable-c').sunkShipIds).toContain(ship.id)
 })

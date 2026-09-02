@@ -12,11 +12,20 @@ const handle = app.getRequestHandler()
 app.prepare().then(() => {
   const httpServer = createServer((req, res) => {
     const parsedUrl = parse(req.url, true)
+    if (parsedUrl.pathname === '/healthz') {
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ status: 'ok' }))
+      return
+    }
     handle(req, res, parsedUrl)
   })
 
   const io = new Server(httpServer, {
-    cors: { origin: '*' }
+    cors: { origin: '*' },
+    connectionStateRecovery: {
+      maxDisconnectionDuration: 30_000,
+      skipMiddlewares: false,
+    },
   })
 
   registerHandlers(io)

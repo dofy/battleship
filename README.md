@@ -4,10 +4,10 @@ Real-time multiplayer Battleship game. Create or join a room, place your fleet, 
 
 ## Tech Stack
 
-- **Next.js 14** — Pages Router + Custom Server
+- **Next.js 16** — Pages Router + Custom Server
 - **Socket.IO 4** — Real-time bidirectional communication (shared HTTP server)
-- **Tailwind CSS v3** — Styling with metallic zinc/sky/teal palette
-- **Share Tech Mono** — Monospace Google Font for military terminal aesthetics
+- **Tailwind CSS v4** — Responsive zinc/sky/teal interface
+- **System fonts** — No render-blocking external font request
 - **In-memory state** — Game state stored in Node.js process memory (`Map`), no external database
 
 ## Features
@@ -20,7 +20,7 @@ Real-time multiplayer Battleship game. Create or join a room, place your fleet, 
 - Visual attack animations: 💥 explosion for hits, ripple rings for misses — on both offense and defense boards
 - Full-screen Victory / Defeat overlay with confetti and animations
 - Rematch voting after game ends
-- Auto win on opponent disconnect
+- Stable player identity with a 30-second reconnect grace period
 - Local `localStorage` win/loss record
 
 ## Fleet Configuration
@@ -37,13 +37,13 @@ Real-time multiplayer Battleship game. Create or join a room, place your fleet, 
 
 ```bash
 # Install dependencies
-npm install
+pnpm install --frozen-lockfile
 
 # Development
-npm run dev
+pnpm dev
 
 # Production
-npm run build && npm start
+pnpm build && pnpm start
 ```
 
 Open `http://localhost:3000` to play.
@@ -57,14 +57,15 @@ battleship/
 │   ├── gameStore.js            # In-memory game state management
 │   ├── socketHandlers.js       # Socket.IO event handlers
 │   ├── shipUtils.js            # Core game logic (ship placement, hit detection)
-│   └── socket.js               # Client-side Socket.IO singleton
+│   ├── socket.js               # Client-side Socket.IO singleton
+│   └── playerIdentity.js       # Stable local player identity for reconnects
 ├── pages/
 │   ├── _app.js                 # Global font, favicon
 │   ├── index.js                # Lobby (create/join room, combat record)
 │   └── room/[id].js            # Game room (placement + combat)
 ├── components/
 │   ├── Board.js                # 10×10 grid with attack animations
-│   ├── ShipPlacer.js           # Drag-and-drop fleet placement
+│   ├── ShipPlacer.js           # Touch- and keyboard-friendly fleet placement
 │   ├── LobbyTable.js           # Public room list
 │   ├── GameStats.js            # Combat sidebar (fleet status, shot stats)
 │   └── GameOverOverlay.js      # Full-screen Victory/Defeat animation
@@ -77,5 +78,9 @@ battleship/
 ## Tests
 
 ```bash
-npm test
+pnpm test
 ```
+
+## Railway deployment
+
+`railway.json` configures the `/healthz` deployment health check and restart policy. Game rooms remain in process memory, so the service must stay at one replica; a deploy or process restart ends active rooms. Horizontal scaling or restart-safe matches require moving room state to a shared store and using a Socket.IO adapter such as Redis.

@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { getSocket } from '../lib/socket'
 import LobbyTable from '../components/LobbyTable'
 import { useLocalStats } from '../hooks/useLocalStats'
+import { getOrCreatePlayerId } from '../lib/playerIdentity'
 
 export default function Home() {
   const router = useRouter()
@@ -13,6 +14,7 @@ export default function Home() {
   const [rooms, setRooms]       = useState([])
   const [isPublic, setIsPublic] = useState(true)
   const [error, setError]       = useState('')
+  const [pendingAction, setPendingAction] = useState('')
   const { stats } = useLocalStats()
   const socketRef = useRef(null)
 
@@ -26,7 +28,10 @@ export default function Home() {
     const onListResult = ({ rooms }) => setRooms(rooms)
     const onCreated    = ({ roomId }) => router.push(`/room/${roomId}`)
     const onJoined     = ({ roomState }) => router.push(`/room/${roomState.id}`)
-    const onError      = ({ message }) => setError(message)
+    const onError      = ({ message }) => {
+      setPendingAction('')
+      setError(message)
+    }
 
     socket.on('room:list_result', onListResult)
     socket.on('room:created',     onCreated)
@@ -57,14 +62,24 @@ export default function Home() {
     if (!nickname.trim()) return setError('Enter a callsign first')
     saveName()
     setError('')
-    socketRef.current.emit('room:create', { nickname: nickname.trim(), isPublic })
+    setPendingAction('create')
+    socketRef.current.emit('room:create', {
+      nickname: nickname.trim(),
+      isPublic,
+      playerId: getOrCreatePlayerId(),
+    })
   }
 
   function handleJoin(id) {
     if (!nickname.trim()) return setError('Enter a callsign first')
     saveName()
     setError('')
-    socketRef.current.emit('room:join', { roomId: id || roomCode.trim(), nickname: nickname.trim() })
+    setPendingAction('join')
+    socketRef.current.emit('room:join', {
+      roomId: id || roomCode.trim(),
+      nickname: nickname.trim(),
+      playerId: getOrCreatePlayerId(),
+    })
   }
 
   const winRate = stats.wins + stats.losses > 0
@@ -76,24 +91,26 @@ export default function Home() {
       <Head><title>⚓ Battleship</title></Head>
 
       {/* Header */}
-      <div className="border-b border-zinc-800 px-4 sm:px-6 py-4 flex items-center gap-3">
+      <header className="border-b border-zinc-800 px-4 sm:px-6 py-4 flex items-center gap-3">
         <span className="text-2xl">⚓</span>
-        <h1 className="text-xl font-bold text-zinc-100 tracking-widest">BATTLESHIP</h1>
-        <span className="text-zinc-600 text-sm hidden sm:inline">Naval Combat · 1v1 Live</span>
-      </div>
+        <h1 className="font-mono text-xl font-bold text-zinc-100 tracking-widest">BATTLESHIP</h1>
+        <span className="text-zinc-400 text-sm hidden sm:inline">Naval Combat · 1v1 Live</span>
+      </header>
 
       {/* Main content */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col sm:flex-row gap-6 sm:gap-8">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10 flex flex-col sm:flex-row gap-6 sm:gap-8">
 
         {/* Controls */}
         <div className="w-full sm:w-56 space-y-4 sm:flex-shrink-0">
           {/* Callsign */}
           <div>
-            <label className="text-sm text-sky-400 uppercase font-bold block mb-1.5 tracking-widest">
+            <label htmlFor="callsign" className="text-sm text-sky-400 uppercase font-bold block mb-1.5 tracking-widest">
               Callsign
             </label>
             <input
               value={nickname}
+              id="callsign"
+              name="callsign"
               onChange={e => { setNickname(e.target.value); setError('') }}
               onKeyDown={e => e.key === 'Enter' && handleCreate()}
               className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-3 text-base outline-none focus:border-sky-600 transition-colors"
@@ -117,24 +134,27 @@ export default function Home() {
           {/* Create button */}
           <button
             onClick={handleCreate}
-            className="w-full py-3 bg-sky-700 hover:bg-sky-600 active:bg-sky-800 rounded-lg font-bold text-sm tracking-widest transition-colors"
+            disabled={!!pendingAction}
+            className="w-full min-h-11 py-3 bg-sky-700 hover:bg-sky-600 active:bg-sky-800 rounded-lg font-bold text-sm tracking-widest transition-colors disabled:cursor-wait disabled:opacity-60"
           >
-            + NEW BATTLE
+            {pendingAction === 'create' ? 'OPENING...' : '+ NEW BATTLE'}
           </button>
 
           {/* Divider */}
           <div className="flex items-center gap-2">
             <div className="flex-1 h-px bg-zinc-800" />
-            <span className="text-sm text-zinc-600">or</span>
+            <span className="text-sm text-zinc-400">or</span>
             <div className="flex-1 h-px bg-zinc-800" />
           </div>
 
           {/* Join by code */}
           <div>
-            <label className="text-sm text-zinc-500 block mb-1.5">Join by room code</label>
+            <label htmlFor="room-code" className="text-sm text-zinc-400 block mb-1.5">Join by room code</label>
             <div className="flex gap-2">
               <input
                 value={roomCode}
+                id="room-code"
+                name="roomCode"
                 onChange={e => setRoomCode(e.target.value.toUpperCase())}
                 onKeyDown={e => e.key === 'Enter' && handleJoin()}
                 placeholder="XXXXXX"
@@ -145,15 +165,16 @@ export default function Home() {
               />
               <button
                 onClick={() => handleJoin()}
-                className="px-4 py-3 border border-sky-700 text-sky-400 hover:bg-sky-900 active:bg-sky-950 rounded-lg text-sm font-bold whitespace-nowrap transition-colors"
+                disabled={!!pendingAction || roomCode.trim().length !== 6}
+                className="min-h-11 px-4 py-3 border border-sky-700 text-sky-400 hover:bg-sky-900 active:bg-sky-950 rounded-lg text-sm font-bold whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:border-zinc-700 disabled:text-zinc-500"
               >
-                Join
+                {pendingAction === 'join' ? 'Joining...' : 'Join'}
               </button>
             </div>
           </div>
 
           {error && (
-            <p className="text-red-400 text-sm bg-red-950 border border-red-800 rounded-lg px-3 py-2">
+            <p role="alert" className="text-red-300 text-sm bg-red-950 border border-red-800 rounded-lg px-3 py-2">
               ⚠ {error}
             </p>
           )}
@@ -171,7 +192,7 @@ export default function Home() {
                 <span className="text-zinc-200 font-mono ml-2">{stats.losses}</span>
               </div>
               <div className="flex justify-between text-sm flex-1 sm:flex-none sm:pt-1 sm:border-t sm:border-zinc-700">
-                <span className="text-zinc-500">Win Rate</span>
+                <span className="text-zinc-400">Win Rate</span>
                 <span className="text-sky-400 font-mono font-bold ml-2">{winRate}%</span>
               </div>
             </div>
@@ -184,14 +205,14 @@ export default function Home() {
             <div className="text-sm text-sky-400 uppercase font-bold tracking-widest">Open Battles</div>
             <button
               onClick={() => socketRef.current?.emit('room:list')}
-              className="text-sm text-zinc-500 hover:text-zinc-300 active:text-zinc-100 transition-colors px-2 py-1"
+              className="min-h-11 text-sm text-zinc-400 hover:text-zinc-200 active:text-zinc-100 transition-colors px-2 py-1"
             >
               ↺ Refresh
             </button>
           </div>
           <LobbyTable rooms={rooms} onJoin={handleJoin} />
         </div>
-      </div>
+      </main>
     </div>
   )
 }

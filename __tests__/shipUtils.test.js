@@ -29,6 +29,21 @@ test('validateBoard accepts valid random board', () => {
   expect(validateBoard(board)).toBe(true)
 })
 
+test('randomPlaceShips assigns every ship a stable unique id', () => {
+  const board = randomPlaceShips(createEmptyBoard())
+  const ids = new Set(board.flat().filter(cell => cell.hasShip).map(cell => cell.shipId))
+  expect(ids).toEqual(new Set(SHIPS.map(ship => ship.id)))
+})
+
+test('validateBoard rejects malformed and pre-attacked payloads', () => {
+  expect(validateBoard(null)).toBe(false)
+  expect(validateBoard([])).toBe(false)
+
+  const board = randomPlaceShips(createEmptyBoard())
+  board[0][0].attacked = true
+  expect(validateBoard(board)).toBe(false)
+})
+
 test('processAttack marks cell as attacked', () => {
   const { processAttack } = require('../lib/shipUtils')
   const board = randomPlaceShips(createEmptyBoard())
