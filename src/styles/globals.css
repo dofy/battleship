@@ -92,8 +92,8 @@ button, input {
 }
 
 @keyframes battle-dialog-in {
-  from { transform: translate(-50%, -48%) scale(0.97); opacity: 0; }
-  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  from { scale: 0.97; opacity: 0; }
+  to { scale: 1; opacity: 1; }
 }
 
 @keyframes card-in {
